@@ -1,6 +1,0 @@
-name = "iamparia"
-compatibility_date = "2024-01-01"
-
-[build]
-command = "cd iamParia && npm install && npm run build"
-output_dir = "iamParia/dist" 
