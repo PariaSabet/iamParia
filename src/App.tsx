@@ -28,6 +28,7 @@ function App() {
               <div className="windows__name--inner">
                 Windows<span>xp</span>
               </div>
+              <h3> Please wait...</h3>
             </div>
             <div className="windows__bg--loading">
               <ul>
