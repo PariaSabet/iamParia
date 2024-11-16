@@ -1,0 +1,27 @@
+.start-button {
+  display: flex;
+  align-items: center;
+  padding: 2px 6px;
+  height: 100%;
+  background: linear-gradient(to bottom, #3b91f3 0%, #1959b3 100%);
+  border: 1px solid #0054e3;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.start-button:hover {
+  background: linear-gradient(to bottom, #4ba0ff 0%, #1959b3 100%);
+}
+
+.start-button img {
+  width: 20px;
+  height: 20px;
+  margin-right: 4px;
+}
+
+.start-button span {
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+  font-family: 'Tahoma', sans-serif;
+}
