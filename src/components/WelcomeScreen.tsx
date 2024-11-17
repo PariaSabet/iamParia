@@ -4,8 +4,18 @@ import githubIcon from '../assets/icons/github.png'
 import linkedinIcon from '../assets/icons/linkedin.png'
 import instagramIcon from '../assets/icons/instagram.png'
 import codepenIcon from '../assets/icons/codepen.png'
-
+import buyMeACoffeeIcon from '../assets/icons/bmc-logo.png'
+import youtubeIcon from '../assets/icons/youtube.png'
+import resumeIcon from '../assets/icons/resume.png'
+import resumePdf from '../assets/resume/Resume.pdf'
+import twitterIcon from '../assets/icons/twitter.png'
 const desktopIcons = [
+  {
+    icon: resumeIcon,
+    label: 'Resume',
+    link: resumePdf,
+    isDownload: true,
+  },
   {
     icon: githubIcon,
     label: 'GitHub',
@@ -17,14 +27,29 @@ const desktopIcons = [
     link: 'https://linkedin.com/in/pariasabet',
   },
   {
+    icon: codepenIcon,
+    label: 'CodePen',
+    link: 'https://codepen.io/PariaSabet13',
+  },
+  {
+    icon: youtubeIcon,
+    label: 'YouTube',
+    link: 'https://www.youtube.com/@pariasabet13',
+  },
+  {
     icon: instagramIcon,
     label: 'Instagram',
     link: 'https://instagram.com/pariasabet13',
   },
   {
-    icon: codepenIcon,
-    label: 'CodePen',
-    link: 'https://codepen.io/PariaSabet13',
+    icon: buyMeACoffeeIcon,
+    label: 'Buy Me a Coffee',
+    link: 'https://buymeacoffee.com/pariasabet13',
+  },
+  {
+    icon: twitterIcon,
+    label: 'X or Twitter',
+    link: 'https://x.com/PariaSabet13',
   },
 ]
 
@@ -39,6 +64,7 @@ export function WelcomeScreen() {
               icon={icon.icon}
               label={icon.label}
               link={icon.link}
+              isDownload={icon.isDownload}
             />
           ))}
         </div>

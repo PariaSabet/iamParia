@@ -2,31 +2,25 @@ interface DesktopIconProps {
   icon: string
   label: string
   link: string
+  isDownload?: boolean
 }
 
-export function DesktopIcon({ icon, label, link }: DesktopIconProps) {
-  const handleClick = () => {
-    window.open(link, '_blank')
-  }
-
+export function DesktopIcon({
+  icon,
+  label,
+  link,
+  isDownload,
+}: DesktopIconProps) {
   return (
-    <div
-      className="flex flex-col items-center w-24 p-2 cursor-pointer group rounded hover:bg-white/10"
-      onClick={handleClick}
+    <a
+      href={link}
+      target="_blank"
+      rel="noopener noreferrer"
+      download={isDownload}
+      className="w-24 h-24 flex flex-col items-center justify-center gap-1 p-2 rounded hover:bg-white/10 cursor-pointer"
     >
-      <img
-        src={icon}
-        alt={label}
-        className="w-12 h-12 mb-1 group-hover:scale-105 transition-transform"
-        draggable="false"
-      />
-      <span
-        className="text-white text-center text-sm px-1 break-words select-none
-                   group-hover:bg-[#0b61ff] group-hover:text-white
-                   whitespace-nowrap overflow-hidden text-ellipsis max-w-full"
-      >
-        {label}
-      </span>
-    </div>
+      <img src={icon} alt={label} className="w-12 h-12" />
+      <span className="text-sm text-center">{label}</span>
+    </a>
   )
 }
