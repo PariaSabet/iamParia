@@ -4,11 +4,13 @@ import githubIcon from '../assets/icons/github.png'
 import linkedinIcon from '../assets/icons/linkedin.png'
 import instagramIcon from '../assets/icons/instagram.png'
 import codepenIcon from '../assets/icons/codepen.png'
-import buyMeACoffeeIcon from '../assets/icons/bmc-logo.png'
+import buyMeACoffeeIcon from '../assets/icons/bmc-logo.svg'
 import youtubeIcon from '../assets/icons/youtube.png'
 import resumeIcon from '../assets/icons/resume.png'
 import resumePdf from '../assets/resume/Resume.pdf'
 import twitterIcon from '../assets/icons/twitter.png'
+import stravaIcon from '../assets/icons/strava.svg'
+
 const desktopIcons = [
   {
     icon: resumeIcon,
@@ -42,14 +44,19 @@ const desktopIcons = [
     link: 'https://instagram.com/pariasabet13',
   },
   {
-    icon: buyMeACoffeeIcon,
-    label: 'Buy Me a Coffee',
-    link: 'https://buymeacoffee.com/pariasabet13',
-  },
-  {
     icon: twitterIcon,
     label: 'X or Twitter',
     link: 'https://x.com/PariaSabet13',
+  },
+  {
+    icon: stravaIcon,
+    label: 'Strava',
+    link: 'https://www.strava.com/athletes/pariasabet',
+  },
+  {
+    icon: buyMeACoffeeIcon,
+    label: 'Buy Me a Coffee',
+    link: 'https://buymeacoffee.com/pariasabet13',
   },
 ]
 
