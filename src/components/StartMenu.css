@@ -9,13 +9,11 @@
 
 .start-menu {
   position: fixed;
-  bottom: 30px;
+  bottom: 40px;
   left: 0;
   width: 380px;
   height: 480px;
-  background: linear-gradient(to bottom, #fff 0%, #e3efff 100%);
   border: 1px solid #0054e3;
-  border-radius: 8px 8px 0 0;
   display: flex;
   z-index: 999;
   box-shadow: 2px -2px 5px rgba(0, 0, 0, 0.2);
