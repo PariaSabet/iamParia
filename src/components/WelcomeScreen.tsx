@@ -10,6 +10,7 @@ import resumeIcon from '../assets/icons/resume.png'
 import resumePdf from '../assets/resume/Resume.pdf'
 import twitterIcon from '../assets/icons/twitter.png'
 import stravaIcon from '../assets/icons/strava.svg'
+import xpBackground from '../assets/background.webp'
 
 const desktopIcons = [
   {
@@ -62,8 +63,15 @@ const desktopIcons = [
 
 export function WelcomeScreen() {
   return (
-    <div className="fixed inset-0 bg-[#274472] text-white flex flex-col animate-fadeIn">
-      <div className="flex-1 p-4">
+    <div
+      className="fixed inset-0 text-white flex flex-col animate-fadeIn"
+      style={{
+        backgroundImage: `url(${xpBackground})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+      }}
+    >
+      <div className="flex-1 p-4 bg-black bg-opacity-50">
         <div className="grid grid-cols-[repeat(auto-fill,96px)] gap-1 justify-start">
           {desktopIcons.map((icon, index) => (
             <DesktopIcon
