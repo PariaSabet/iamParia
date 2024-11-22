@@ -1,8 +1,12 @@
+import folderIcon from '../assets/icons/folder.png'
+import randomMealGeneratorIcon from '../assets/icons/planning.png'
+import githubIcon from '../assets/icons/github.svg'
 interface Project {
   title: string
   description: string
-  technologies: string[]
   link: string
+  icon: string
+  githubLink: string
 }
 
 interface ProjectsWindowProps {
@@ -12,14 +16,14 @@ interface ProjectsWindowProps {
 
 export function ProjectsWindow({ isOpen, onClose }: ProjectsWindowProps) {
   const projects: Project[] = [
-    // Add your projects here
     {
-      title: 'Project 1',
-      description: 'Description of project 1',
-      technologies: ['React', 'TypeScript', 'Tailwind'],
-      link: 'https://github.com/yourusername/project1',
+      title: 'Random Meal Generator',
+      description: 'Have no idea what to eat? Generate a random meal!',
+
+      link: 'https://randomrecipesgenerator.netlify.app/',
+      icon: randomMealGeneratorIcon,
+      githubLink: 'https://github.com/PariaSabet/randomMealGenerator',
     },
-    // Add more projects as needed
   ]
 
   if (!isOpen) return null
@@ -33,46 +37,80 @@ export function ProjectsWindow({ isOpen, onClose }: ProjectsWindowProps) {
       <div className="relative bg-[#ECE9D8] text-black w-[800px] h-[600px] rounded-lg shadow-xl">
         {/* Window Title Bar */}
         <div className="bg-gradient-to-r from-[#0A246A] via-[#3A6EA5] to-[#0A246A] px-2 py-1 flex items-center justify-between rounded-t-lg">
-          <span className="text-white">My Projects</span>
-          <button
-            onClick={onClose}
-            className="text-white hover:bg-red-600 px-2 rounded"
-          >
-            ✕
-          </button>
+          <div className="flex items-center gap-2">
+            <img src={folderIcon} alt="Folder" className="w-4 h-4" />
+            <span className="text-white">My Projects</span>
+          </div>
+          <div className="flex gap-1">
+            <button className="text-white hover:bg-[#1f3b69] px-2 rounded">
+              -
+            </button>
+            <button className="text-white hover:bg-[#1f3b69] px-2 rounded">
+              □
+            </button>
+            <button
+              onClick={onClose}
+              className="text-white hover:bg-red-600 px-2 rounded"
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+
+        {/* Toolbar */}
+        <div className="bg-[#F1EFE2] border-b border-[#919B9C] px-2 py-1">
+          <span className="text-sm">View</span>
+        </div>
+
+        {/* Address Bar */}
+        <div className="bg-[#F1EFE2] px-2 py-1 flex items-center gap-2 border-b border-[#919B9C]">
+          <span className="text-sm">Address</span>
+          <div className="flex-1 bg-white border border-[#919B9C] px-2 py-0.5 text-sm">
+            My Computer/My Projects
+          </div>
         </div>
 
         {/* Projects Content */}
-        <div className="p-4 overflow-auto h-[calc(100%-2rem)]">
-          {projects.map((project, index) => (
-            <div
-              key={index}
-              className="bg-white p-4 mb-4 rounded shadow hover:shadow-md transition-shadow"
-            >
-              <h3 className="text-xl font-bold text-[#0A246A]">
-                {project.title}
-              </h3>
-              <p className="mt-2">{project.description}</p>
-              <div className="mt-2 flex flex-wrap gap-2">
-                {project.technologies.map((tech, i) => (
-                  <span
-                    key={i}
-                    className="bg-[#ECE9D8] px-2 py-1 rounded text-sm"
-                  >
-                    {tech}
-                  </span>
-                ))}
-              </div>
+        <div className="p-4 overflow-auto h-[calc(100%-8rem)] bg-white">
+          <div className="grid grid-cols-[repeat(auto-fill,minmax(120px,1fr))] gap-4">
+            {projects.map((project, index) => (
               <a
+                key={index}
                 href={project.link}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-blue-600 hover:underline mt-2 inline-block"
+                className="flex flex-col items-center p-2 hover:bg-[#ECE9D8] rounded group"
               >
-                View Project →
+                <img
+                  src={project.icon}
+                  alt={project.title}
+                  className="w-16 h-16 mb-2"
+                />
+                <span className="text-center text-sm group-hover:text-[#0A246A]">
+                  {project.title}
+                </span>
+
+                {/* Tooltip on hover */}
+                <div className="hidden group-hover:block absolute bg-white border border-gray-200 p-2 rounded shadow-lg mt-24 z-10 w-48">
+                  <h4 className="font-bold">{project.title}</h4>
+                  <p className="text-sm mt-1">{project.description}</p>
+                  <a
+                    href={project.githubLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-500 hover:underline mt-1 block"
+                  >
+                    <img src={githubIcon} alt="GitHub" className="w-5 h-5" />
+                  </a>
+                </div>
               </a>
-            </div>
-          ))}
+            ))}
+          </div>
+        </div>
+
+        {/* Status Bar */}
+        <div className="absolute bottom-0 left-0 right-0 bg-[#F1EFE2] border-t border-[#919B9C] px-2 py-0.5">
+          <span className="text-sm">{projects.length} items</span>
         </div>
       </div>
     </div>
