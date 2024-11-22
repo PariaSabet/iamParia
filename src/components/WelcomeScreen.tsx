@@ -1,18 +1,26 @@
+import { useState } from 'react'
 import { TaskBar } from './TaskBar'
 import { DesktopIcon } from './DesktopIcon'
-import githubIcon from '../assets/icons/github.png'
+import { ProjectsWindow } from './ProjectsWindow'
+import folderIcon from '../assets/icons/folder.png'
+import resumeIcon from '../assets/icons/curriculum-vitae.png'
+import githubIcon from '../assets/icons/git.png'
 import linkedinIcon from '../assets/icons/linkedin.png'
-import instagramIcon from '../assets/icons/instagram.png'
-import codepenIcon from '../assets/icons/codepen.png'
-import buyMeACoffeeIcon from '../assets/icons/bmc-logo.svg'
+import codepenIcon from '../assets/icons/coding.png'
 import youtubeIcon from '../assets/icons/youtube.png'
-import resumeIcon from '../assets/icons/resume.png'
+import instagramIcon from '../assets/icons/instagram.png'
+import twitterIcon from '../assets/icons/retweet.png'
+import buyMeACoffeeIcon from '../assets/icons/coffee-cup.png'
 import resumePdf from '../assets/resume/Resume.pdf'
-import twitterIcon from '../assets/icons/twitter.png'
-import stravaIcon from '../assets/icons/strava.svg'
+import stravaIcon from '../assets/icons/running.png'
 import xpBackground from '../assets/background.webp'
 
 const desktopIcons = [
+  {
+    icon: folderIcon,
+    label: 'My Projects',
+    onClick: () => {},
+  },
   {
     icon: resumeIcon,
     label: 'Resume',
@@ -62,6 +70,10 @@ const desktopIcons = [
 ]
 
 export function WelcomeScreen() {
+  const [isProjectsOpen, setIsProjectsOpen] = useState(false)
+
+  desktopIcons[0].onClick = () => setIsProjectsOpen(true)
+
   return (
     <div
       className="fixed inset-0 text-white flex flex-col animate-fadeIn"
@@ -80,11 +92,16 @@ export function WelcomeScreen() {
               label={icon.label}
               link={icon.link}
               isDownload={icon.isDownload}
+              onClick={icon.onClick}
             />
           ))}
         </div>
       </div>
       <TaskBar />
+      <ProjectsWindow
+        isOpen={isProjectsOpen}
+        onClose={() => setIsProjectsOpen(false)}
+      />
     </div>
   )
 }

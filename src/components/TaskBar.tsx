@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import startIcon from '../assets/logo.svg'
-import spotifyIcon from '../assets/icons/spotify.svg'
+import spotifyIcon from '../assets/icons/spotify.png'
 import { StartMenu } from './StartMenu'
 
 export function TaskBar() {
