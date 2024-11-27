@@ -34,9 +34,9 @@ export function TaskBar() {
 
   return (
     <>
-      <div className="h-10 bg-gradient-to-b from-[#245edb] via-[#2b76e9] to-[#1553c7] flex items-center justify-between w-full">
+      <div className="h-10 bg-gradient-to-r from-[#0A246A] via-[#3A6EA5] to-[#0A246A] flex items-center justify-between w-full">
         <div
-          className="h-full float-left text-2xl font-bold italic bg-[radial-gradient(circle,#5eac56_0%,#3c873c_100%)] bg-center bg-no-repeat bg-cover shadow-[inset_0px_5px_10px_#79ce71,4px_0_8px_#3f8cf3] py-[2px] pr-6 pl-2 text-shadow rounded-r-lg mr-4 cursor-pointer"
+          className="h-full float-left text-2xl font-bold italic bg-[radial-gradient(circle,#5eac56_0%,#3c873c_100%)] bg-center bg-no-repeat bg-cover py-[2px] pr-6 pl-2 text-shadow rounded-r-lg mr-4 cursor-pointer"
           onClick={toggleStartMenu}
         >
           <img src={startIcon} alt="Start" className="w-6 h-6 mr-2 inline" />

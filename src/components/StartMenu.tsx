@@ -25,7 +25,7 @@ export function StartMenu({ isOpen, onClose, className = '' }: StartMenuProps) {
       <div className="start-menu-overlay" onClick={onClose} />
 
       <div className="start-menu flex flex-col rounded-lg">
-        <div className="start-menu-header bg-gradient-to-r from-[#015db9] to-[#2989e0] rounded-t-lg border-[#015db9]">
+        <div className="start-menu-header bg-gradient-to-r from-[#0A246A] via-[#3A6EA5] to-[#0A246A] rounded-t-lg">
           <div className="text-white px-3 py-2 flex items-center gap-2 border-b">
             <img
               className="w-8 h-8 border border-transparent"
