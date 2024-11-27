@@ -1,5 +1,6 @@
 import folderIcon from '../assets/icons/folder.png'
 import randomMealGeneratorIcon from '../assets/icons/planning.png'
+import cssArtsIcon from '../assets/icons/css-file.png'
 import githubIcon from '../assets/icons/github.svg'
 interface Project {
   title: string
@@ -17,12 +18,20 @@ interface ProjectsWindowProps {
 export function ProjectsWindow({ isOpen, onClose }: ProjectsWindowProps) {
   const projects: Project[] = [
     {
-      title: 'Random Meal Generator',
+      title: 'Meal Generator',
       description: 'Have no idea what to eat? Generate a random meal!',
 
       link: 'https://randomrecipesgenerator.netlify.app/',
       icon: randomMealGeneratorIcon,
       githubLink: 'https://github.com/PariaSabet/randomMealGenerator',
+    },
+    {
+      title: 'CSS Arts',
+      description: 'I make arts with CSS just for fun',
+
+      link: 'https://cssartss.netlify.app/',
+      icon: cssArtsIcon,
+      githubLink: 'https://github.com/PariaSabet/cssArts',
     },
   ]
 
@@ -86,7 +95,7 @@ export function ProjectsWindow({ isOpen, onClose }: ProjectsWindowProps) {
                   alt={project.title}
                   className="w-16 h-16 mb-2"
                 />
-                <span className="text-center text-sm group-hover:text-[#0A246A]">
+                <span className="text-center text-xs group-hover:text-[#0A246A]">
                   {project.title}
                 </span>
 
