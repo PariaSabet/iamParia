@@ -14,6 +14,7 @@ import buyMeACoffeeIcon from '../assets/icons/coffee-cup.png'
 import resumePdf from '../assets/resume/Resume.pdf'
 import stravaIcon from '../assets/icons/running.png'
 import xpBackground from '../assets/background.webp'
+import { SpotifyNowPlaying } from './SpotifyNowPlaying'
 
 const desktopIcons = [
   {
@@ -96,12 +97,16 @@ export function WelcomeScreen() {
             />
           ))}
         </div>
+        {/* <SpotifyNowPlaying /> */}
       </div>
       <TaskBar />
       <ProjectsWindow
         isOpen={isProjectsOpen}
         onClose={() => setIsProjectsOpen(false)}
       />
+      <div className="fixed bottom-12 right-4">
+        <SpotifyNowPlaying />
+      </div>
     </div>
   )
 }
