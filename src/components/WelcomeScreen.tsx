@@ -65,7 +65,7 @@ const desktopIcons = [
   },
   {
     icon: buyMeACoffeeIcon,
-    label: 'Buy Me a Coffee',
+    label: 'Buy me Tea',
     link: 'https://buymeacoffee.com/pariasabet13',
   },
 ]

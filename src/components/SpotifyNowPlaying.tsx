@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { getAccessToken } from '../utils/spotify'
 
 export interface SpotifyTrack {
   name: string
@@ -17,122 +18,126 @@ export interface NowPlayingResponse {
   item: SpotifyTrack
 }
 
-const SPOTIFY_CLIENT_ID = import.meta.env.VITE_SPOTIFY_CLIENT_ID
-const SPOTIFY_CLIENT_SECRET = import.meta.env.VITE_SPOTIFY_CLIENT_SECRET
-const REFRESH_TOKEN = import.meta.env.VITE_SPOTIFY_REFRESH_TOKEN
+export interface RecentlyPlayedResponse {
+  items: Array<{
+    track: SpotifyTrack
+    played_at: string
+  }>
+}
 
 export function SpotifyNowPlaying() {
-  const [currentTrack, setCurrentTrack] = useState<SpotifyTrack | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const [accessToken, setAccessToken] = useState<string | null>(null)
+  const [trackData, setTrackData] = useState<{
+    name: string
+    artist: string
+    album: string
+    albumImageUrl: string
+    isPlaying: boolean
+  } | null>(null)
 
-  const getAccessToken = async () => {
-    const basic = btoa(`${SPOTIFY_CLIENT_ID}:${SPOTIFY_CLIENT_SECRET}`)
-    try {
-      const response = await fetch('https://accounts.spotify.com/api/token', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          Authorization: `Basic ${basic}`,
-        },
-        body: new URLSearchParams({
-          grant_type: 'refresh_token',
-          refresh_token: REFRESH_TOKEN,
-        }),
-      })
-
-      const data = await response.json()
-      setAccessToken(data.access_token)
-    } catch (error) {
-      console.error('Error getting access token:', error)
-      setError('Failed to authenticate with Spotify')
-    }
-  }
-
-  // Get initial access token and refresh it periodically
   useEffect(() => {
-    getAccessToken()
-    const interval = setInterval(getAccessToken, 3600 * 1000) // Refresh every hour
-    return () => clearInterval(interval)
-  }, [])
-
-  // Fetch currently playing track
-  useEffect(() => {
-    const fetchNowPlaying = async () => {
-      if (!accessToken) return
-
+    const fetchData = async () => {
       try {
-        const response = await fetch(
+        // Get token for currently playing
+        const currentToken = await getAccessToken('current')
+        if (!currentToken) {
+          console.error('Failed to get current playing access token')
+          return
+        }
+
+        // First try to get currently playing
+        const currentResponse = await fetch(
           'https://api.spotify.com/v1/me/player/currently-playing',
           {
             headers: {
-              Authorization: `Bearer ${accessToken}`,
+              Authorization: `Bearer ${currentToken}`,
             },
           }
         )
 
-        if (response.status === 204) {
-          setCurrentTrack(null)
-          return
-        }
+        if (currentResponse.status === 200) {
+          const currentData: NowPlayingResponse = await currentResponse.json()
+          setTrackData({
+            name: currentData.item.name,
+            artist: currentData.item.artists[0].name,
+            album: currentData.item.album.name,
+            albumImageUrl: currentData.item.album.images[0]?.url,
+            isPlaying: currentData.is_playing,
+          })
+        } else {
+          // Get token for recently played
+          const recentToken = await getAccessToken('recent')
+          if (!recentToken) {
+            console.error('Failed to get recent played access token')
+            return
+          }
 
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`)
-        }
+          // If nothing is playing, get recently played
+          const recentResponse = await fetch(
+            'https://api.spotify.com/v1/me/player/recently-played?limit=1',
+            {
+              headers: {
+                Authorization: `Bearer ${recentToken}`,
+              },
+            }
+          )
 
-        const data = await response.json()
-        setCurrentTrack(data.item)
+          if (recentResponse.ok) {
+            const recentData: RecentlyPlayedResponse =
+              await recentResponse.json()
+            if (recentData.items.length > 0) {
+              const lastPlayed = recentData.items[0].track
+              setTrackData({
+                name: lastPlayed.name,
+                artist: lastPlayed.artists[0].name,
+                album: lastPlayed.album.name,
+                albumImageUrl: lastPlayed.album.images[0]?.url,
+                isPlaying: false,
+              })
+            }
+          }
+        }
       } catch (error) {
-        console.error('Error fetching now playing:', error)
-        setError('Failed to fetch currently playing track')
-      } finally {
-        setIsLoading(false)
+        console.error('Error fetching Spotify data:', error)
+        setTrackData(null)
       }
     }
 
-    if (accessToken) {
-      fetchNowPlaying()
-      const interval = setInterval(fetchNowPlaying, 30000)
-      return () => clearInterval(interval)
-    }
-  }, [accessToken])
+    fetchData()
+    const interval = setInterval(fetchData, 10000)
 
-  if (isLoading) {
-    return <div>Loading...</div>
-  }
+    return () => clearInterval(interval)
+  }, [])
 
-  if (error) {
-    return <div>{error}</div>
-  }
-
-  if (!currentTrack) {
-    return <div>No song playing right now!</div>
+  if (!trackData) {
+    return (
+      <div className="bg-white/10 backdrop-blur-md rounded-lg p-4 shadow-lg max-w-[300px]">
+        <div className="mb-2 text-gray-300 text-sm font-medium">
+          🎵 I am listening to...
+        </div>
+        <p className="text-gray-300">Not playing</p>
+      </div>
+    )
   }
 
   return (
     <div className="bg-white/10 backdrop-blur-md rounded-lg p-4 shadow-lg max-w-[300px]">
-      {currentTrack ? (
-        <div className="flex items-center gap-3">
-          {currentTrack.album.images[0] && (
-            <img
-              src={currentTrack.album.images[0].url}
-              alt="Album Art"
-              className="w-12 h-12 rounded"
-            />
-          )}
-          <div className="overflow-hidden">
-            <p className="text-white font-medium truncate">
-              {currentTrack.name}
-            </p>
-            <p className="text-gray-300 text-sm truncate">
-              {currentTrack.artists.map((artist) => artist.name).join(', ')}
-            </p>
-          </div>
+      <div className="mb-2 text-gray-300 text-sm font-medium">
+        🎵{' '}
+        {trackData.isPlaying ? 'I am listening to...' : 'I last listened to...'}
+      </div>
+      <div className="flex items-center gap-3">
+        {trackData.albumImageUrl && (
+          <img
+            src={trackData.albumImageUrl}
+            alt={`${trackData.album} cover`}
+            className="w-12 h-12 rounded"
+          />
+        )}
+        <div className="overflow-hidden">
+          <p className="text-white font-medium truncate">{trackData.name}</p>
+          <p className="text-gray-300 text-sm truncate">{trackData.artist}</p>
         </div>
-      ) : (
-        <p className="text-gray-300">Not playing</p>
-      )}
+      </div>
     </div>
   )
 }
