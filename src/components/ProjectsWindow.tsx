@@ -1,6 +1,7 @@
 import folderIcon from '../assets/icons/folder.png'
 import randomMealGeneratorIcon from '../assets/icons/planning.png'
 import cssArtsIcon from '../assets/icons/css-file.png'
+import noteAppIcon from '../assets/icons/notes.png'
 import githubIcon from '../assets/icons/github.svg'
 interface Project {
   title: string
@@ -9,7 +10,6 @@ interface Project {
   icon: string
   githubLink: string
 }
-
 interface ProjectsWindowProps {
   isOpen: boolean
   onClose: () => void
@@ -32,6 +32,14 @@ export function ProjectsWindow({ isOpen, onClose }: ProjectsWindowProps) {
       link: 'https://cssartss.netlify.app/',
       icon: cssArtsIcon,
       githubLink: 'https://github.com/PariaSabet/cssArts',
+    },
+    {
+      title: 'Note App',
+      description: 'A note app with Markdown support',
+
+      link: 'https://noteappwithmarkdown.netlify.app/',
+      icon: noteAppIcon,
+      githubLink: 'https://github.com/PariaSabet/note-taking-app',
     },
   ]
 
