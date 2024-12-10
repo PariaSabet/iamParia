@@ -97,7 +97,6 @@ export function WelcomeScreen() {
             />
           ))}
         </div>
-        {/* <SpotifyNowPlaying /> */}
       </div>
       <TaskBar />
       <ProjectsWindow

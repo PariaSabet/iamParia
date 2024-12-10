@@ -96,16 +96,14 @@ export function ProjectsWindow({ isOpen, onClose }: ProjectsWindowProps) {
                 href={project.link}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex flex-col items-center p-2 hover:bg-[#ECE9D8] rounded group"
+                className="flex flex-col items-center p-2 rounded group"
               >
                 <img
                   src={project.icon}
                   alt={project.title}
                   className="w-16 h-16 mb-2"
                 />
-                <span className="text-center text-xs group-hover:text-[#0A246A]">
-                  {project.title}
-                </span>
+                <span className="text-center text-xs">{project.title}</span>
 
                 {/* Tooltip on hover */}
                 <div className="hidden group-hover:block absolute bg-white border border-gray-200 p-2 rounded shadow-lg mt-24 z-10 w-48">

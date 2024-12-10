@@ -23,7 +23,7 @@ export function DesktopIcon({
 
   return (
     <a
-      className="w-24 flex flex-col items-center p-2 cursor-pointer hover:bg-white hover:bg-opacity-20 rounded"
+      className="w-24 flex flex-col items-center p-2 cursor-pointer rounded"
       onClick={handleClick}
       download={isDownload}
     >
