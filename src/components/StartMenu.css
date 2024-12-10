@@ -1,11 +1,11 @@
-.start-menu-overlay {
+/* .start-menu-overlay {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
   z-index: 998;
-}
+} */
 
 .start-menu {
   position: fixed;
@@ -29,28 +29,4 @@
   width: 40%;
   padding: 6px;
   background: #e3efff;
-}
-
-.menu-item {
-  display: flex;
-  align-items: center;
-  padding: 8px;
-  cursor: pointer;
-  border-radius: 3px;
-}
-
-.menu-item:hover {
-  background-color: #316ac5;
-  color: white;
-}
-
-.menu-item img {
-  width: 24px;
-  height: 24px;
-  margin-right: 8px;
-}
-
-.menu-item span {
-  font-size: 11px;
-  font-family: 'Tahoma', sans-serif;
 }
