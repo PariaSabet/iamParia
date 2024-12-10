@@ -114,7 +114,7 @@ export function SpotifyNowPlaying() {
         <div className="mb-2 text-gray-300 text-sm font-medium">
           🎵 I am listening to...
         </div>
-        <p className="text-gray-300">Not playing</p>
+        <p className="text-gray-300">Loading...</p>
       </div>
     )
   }
