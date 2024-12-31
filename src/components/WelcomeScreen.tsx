@@ -15,11 +15,18 @@ import resumePdf from '../assets/resume/Resume.pdf'
 import stravaIcon from '../assets/icons/running.png'
 import xpBackground from '../assets/background.webp'
 import { SpotifyNowPlaying } from './SpotifyNowPlaying'
+import gameIcon from '../assets/icons/folder-games.png'
+import { GamesWindow } from './GamesWindow'
 
 const desktopIcons = [
   {
     icon: folderIcon,
     label: 'My Projects',
+    onClick: () => {},
+  },
+  {
+    icon: gameIcon,
+    label: 'Games',
     onClick: () => {},
   },
   {
@@ -72,8 +79,10 @@ const desktopIcons = [
 
 export function WelcomeScreen() {
   const [isProjectsOpen, setIsProjectsOpen] = useState(false)
+  const [isGamesOpen, setIsGamesOpen] = useState(false)
 
   desktopIcons[0].onClick = () => setIsProjectsOpen(true)
+  desktopIcons[1].onClick = () => setIsGamesOpen(true)
 
   return (
     <div
@@ -103,6 +112,7 @@ export function WelcomeScreen() {
         isOpen={isProjectsOpen}
         onClose={() => setIsProjectsOpen(false)}
       />
+      <GamesWindow isOpen={isGamesOpen} onClose={() => setIsGamesOpen(false)} />
       <div className="fixed bottom-12 right-4">
         <SpotifyNowPlaying />
       </div>
