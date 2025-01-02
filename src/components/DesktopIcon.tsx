@@ -1,3 +1,5 @@
+import { useState, useRef } from 'react'
+
 interface DesktopIconProps {
   icon: string
   label: string
@@ -13,24 +15,44 @@ export function DesktopIcon({
   isDownload,
   onClick,
 }: DesktopIconProps) {
+  const [isSelected, setIsSelected] = useState(false)
+  const clickTimeoutRef = useRef<number | null>(null)
+
   const handleClick = () => {
-    if (onClick) {
-      onClick()
-    } else if (link) {
-      window.open(link, '_blank')
+    if (!clickTimeoutRef.current) {
+      // First click
+      setIsSelected(true)
+      clickTimeoutRef.current = window.setTimeout(() => {
+        clickTimeoutRef.current = null
+        setIsSelected(false)
+      }, 300) // Reset selection after 300ms if no double click
+      console.log('first click')
+    } else {
+      // Double click
+      clearTimeout(clickTimeoutRef.current)
+      clickTimeoutRef.current = null
+      setIsSelected(false)
+      console.log('double click')
+      if (link) {
+        if (isDownload) {
+          window.open(link, '_blank')
+        } else {
+          window.open(link, '_blank', 'noopener,noreferrer')
+        }
+      } else if (onClick) {
+        onClick()
+      }
     }
   }
 
   return (
-    <a
-      className="w-24 flex flex-col items-center p-2 cursor-pointer rounded"
+    <button
       onClick={handleClick}
-      download={isDownload}
+      className={`w-24 flex flex-col items-center p-2 rounded
+        ${isSelected ? 'bg-blue-500/30' : ''}`}
     >
-      <img src={icon} alt={label} className="w-12 h-12 mb-1" />
-      <span className="text-center text-sm break-words w-full text-shadow-sm">
-        {label}
-      </span>
-    </a>
+      <img src={icon} alt={label} className="w-12 h-12" />
+      <span className="text-center text-sm mt-1 break-words">{label}</span>
+    </button>
   )
 }
