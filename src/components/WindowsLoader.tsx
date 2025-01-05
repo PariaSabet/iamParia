@@ -10,7 +10,7 @@ export function WindowsLoader() {
             <div className="windows__logo--inner yellow"></div>
           </div>
           <div className="windows__name">
-            <p>Microsoft</p>
+            <p>Paria's Version</p>
             <div className="windows__name--inner">
               Windows<span>xp</span>
             </div>
