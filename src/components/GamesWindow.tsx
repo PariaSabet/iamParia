@@ -1,6 +1,7 @@
 import { WindowModal } from './WindowModal'
 import folderIcon from '../assets/icons/folder.png'
-import gameIcon from '../assets/icons/tic-tac-toe.png'
+import ticTacToeIcon from '../assets/icons/tic-tac-toe.png'
+import impossibleGameIcon from '../assets/icons/game.png'
 import githubIcon from '../assets/icons/github.svg'
 
 interface Game {
@@ -22,8 +23,15 @@ export function GamesWindow({ isOpen, onClose }: GamesWindowProps) {
       title: 'Tic-Tac-Toe',
       description: 'a 3d version of the classic game',
       link: 'https://tictactoe3d.netlify.app/',
-      icon: gameIcon,
+      icon: ticTacToeIcon,
       githubLink: 'https://github.com/PariaSabet/tic-tac-toe',
+    },
+    {
+      title: 'The impossible game',
+      description: 'a very easy yet impossible game',
+      link: 'https://myimpossiblegame.netlify.app/',
+      icon: impossibleGameIcon,
+      githubLink: 'https://github.com/PariaSabet/the-impossible-game',
     },
   ]
 
