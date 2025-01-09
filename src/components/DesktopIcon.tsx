@@ -25,14 +25,11 @@ export function DesktopIcon({
       clickTimeoutRef.current = window.setTimeout(() => {
         clickTimeoutRef.current = null
         setIsSelected(false)
-      }, 300) // Reset selection after 300ms if no double click
-      console.log('first click')
+      }, 300)
     } else {
-      // Double click
       clearTimeout(clickTimeoutRef.current)
       clickTimeoutRef.current = null
       setIsSelected(false)
-      console.log('double click')
       if (link) {
         if (isDownload) {
           window.open(link, '_blank')
