@@ -1,4 +1,5 @@
 import { useState } from 'react'
+// import { useNavigate } from 'react-router-dom'
 import { TaskBar } from './TaskBar'
 import { DesktopIcon } from './DesktopIcon'
 import { ProjectsWindow } from './ProjectsWindow'
@@ -17,6 +18,7 @@ import xpBackground from '../assets/background.webp'
 import { SpotifyNowPlaying } from './SpotifyNowPlaying'
 import gameIcon from '../assets/icons/folder-games.png'
 import { GamesWindow } from './GamesWindow'
+// import aiCloneIcon from '../assets/icons/ai.png'
 
 const desktopIcons = [
   {
@@ -75,14 +77,21 @@ const desktopIcons = [
     label: 'Buy me Tea',
     link: 'https://buymeacoffee.com/pariasabet13',
   },
+  // {
+  //   icon: aiCloneIcon,
+  //   label: 'AI Clone',
+  //   onClick: () => {},
+  // },
 ]
 
 export function WelcomeScreen() {
   const [isProjectsOpen, setIsProjectsOpen] = useState(false)
   const [isGamesOpen, setIsGamesOpen] = useState(false)
+  // const navigate = useNavigate()
 
   desktopIcons[0].onClick = () => setIsProjectsOpen(true)
   desktopIcons[1].onClick = () => setIsGamesOpen(true)
+  // desktopIcons[11].onClick = () => navigate('/ai-clone')
 
   return (
     <div
