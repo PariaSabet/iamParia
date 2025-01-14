@@ -1,6 +1,6 @@
 import { marked } from 'marked'
 import icon from '../assets/icons/notepad.png'
-import markdownContent from '../assets/content/aboutme'
+import markdownContent from '../assets/content/AboutMe'
 
 interface NotepadWindowProps {
   isOpen: boolean
