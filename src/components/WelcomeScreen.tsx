@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { TaskBar } from './TaskBar'
 import { DesktopIcon } from './DesktopIcon'
 import { ProjectsWindow } from './ProjectsWindow'
+import { NotepadWindow } from './NotepadWindow'
 import folderIcon from '../assets/icons/folder.png'
 import resumeIcon from '../assets/icons/curriculum-vitae.png'
 import githubIcon from '../assets/icons/git.png'
@@ -18,6 +19,7 @@ import xpBackground from '../assets/background.webp'
 import { SpotifyNowPlaying } from './SpotifyNowPlaying'
 import gameIcon from '../assets/icons/folder-games.png'
 import { GamesWindow } from './GamesWindow'
+import notepadIcon from '../assets/icons/notepad.png'
 // import aiCloneIcon from '../assets/icons/ai.png'
 
 const desktopIcons = [
@@ -29,6 +31,11 @@ const desktopIcons = [
   {
     icon: gameIcon,
     label: 'Games',
+    onClick: () => {},
+  },
+  {
+    icon: notepadIcon,
+    label: 'About Me',
     onClick: () => {},
   },
   {
@@ -87,10 +94,12 @@ const desktopIcons = [
 export function WelcomeScreen() {
   const [isProjectsOpen, setIsProjectsOpen] = useState(false)
   const [isGamesOpen, setIsGamesOpen] = useState(false)
+  const [isNotepadOpen, setIsNotepadOpen] = useState(false)
   // const navigate = useNavigate()
 
   desktopIcons[0].onClick = () => setIsProjectsOpen(true)
   desktopIcons[1].onClick = () => setIsGamesOpen(true)
+  desktopIcons[2].onClick = () => setIsNotepadOpen(true)
   // desktopIcons[11].onClick = () => navigate('/ai-clone')
 
   return (
@@ -122,6 +131,10 @@ export function WelcomeScreen() {
         onClose={() => setIsProjectsOpen(false)}
       />
       <GamesWindow isOpen={isGamesOpen} onClose={() => setIsGamesOpen(false)} />
+      <NotepadWindow
+        isOpen={isNotepadOpen}
+        onClose={() => setIsNotepadOpen(false)}
+      />
       <div className="fixed bottom-12 right-4">
         <SpotifyNowPlaying />
       </div>
