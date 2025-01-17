@@ -1,28 +1,9 @@
-import { useState, useEffect, useRef } from 'react'
-import OpenAI from 'openai'
+import { useState } from 'react'
 
 export function Chatbot() {
-  const openaiRef = useRef(
-    new OpenAI({
-      apiKey: import.meta.env.VITE_OPENAI_API_KEY,
-      dangerouslyAllowBrowser: true,
-    })
-  )
   const [messages, setMessages] = useState<string[]>([])
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
-
-  useEffect(() => {
-    const fetchInitialResponse = async () => {
-      const response11 = await openaiRef.current.chat.completions.create({
-        messages: [{ role: 'user', content: 'Say this is a test' }],
-        model: 'gpt-4o-mini',
-      })
-      console.log(response11)
-    }
-
-    fetchInitialResponse()
-  }, [])
 
   const handleSend = async () => {
     if (input.trim()) {
