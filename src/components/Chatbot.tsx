@@ -32,31 +32,22 @@ export function Chatbot() {
       setLoading(true)
 
       try {
-        const response = await fetch('/api/chat', {
+        const response = await fetch('http://localhost:3000/chat', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ messages: [...messages, userMessage] }),
+          body: JSON.stringify({ prompt: input }),
         })
 
         if (!response.ok) {
           throw new Error('Failed to fetch AI response')
         }
 
-        const reader = response.body?.getReader()
-        const decoder = new TextDecoder()
-        let aiMessage = 'AI: '
+        const data = await response.json()
+        const aiMessage = `AI: ${data.response}`
 
-        while (true) {
-          const { done, value } = (await reader?.read()) || {}
-          if (done) break
-          aiMessage += decoder.decode(value, { stream: true })
-          setMessages((prevMessages) => [
-            ...prevMessages.slice(0, -1),
-            aiMessage,
-          ])
-        }
+        setMessages((prevMessages) => [...prevMessages, aiMessage])
       } catch (error) {
         console.error('Error fetching AI response:', error)
         setMessages((prevMessages) => [
