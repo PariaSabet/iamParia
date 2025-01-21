@@ -13,13 +13,16 @@ export function Chatbot() {
       setLoading(true)
 
       try {
-        const response = await fetch('http://localhost:3000/chat', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ prompt: input }),
-        })
+        const response = await fetch(
+          'https://aicloneofparia.netlify.app/chat',
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ prompt: input }),
+          }
+        )
 
         if (!response.ok) {
           throw new Error('Failed to fetch AI response')
