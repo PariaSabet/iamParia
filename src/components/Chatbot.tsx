@@ -14,7 +14,7 @@ export function Chatbot() {
 
       try {
         const response = await fetch(
-          'https://aicloneofparia.netlify.app/chat',
+          'https://aicloneofparia.netlify.app/.netlify/functions/api',
           {
             method: 'POST',
             headers: {
