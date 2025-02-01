@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { getAccessToken } from '../utils/spotify'
+import spotifyIcon from '../assets/icons/spotify.png'
 
 export interface SpotifyTrack {
   name: string
@@ -64,14 +65,13 @@ export function SpotifyNowPlaying() {
             isPlaying: currentData.is_playing,
           })
         } else {
-          // Get token for recently played
+          // If nothing is playing, get recently played
           const recentToken = await getAccessToken('recent')
           if (!recentToken) {
             console.error('Failed to get recent played access token')
             return
           }
 
-          // If nothing is playing, get recently played
           const recentResponse = await fetch(
             'https://api.spotify.com/v1/me/player/recently-played?limit=1',
             {
@@ -108,34 +108,99 @@ export function SpotifyNowPlaying() {
     return () => clearInterval(interval)
   }, [])
 
+  // If data not loaded, show loading
   if (!trackData) {
     return (
-      <div className="bg-white/10 backdrop-blur-md rounded-lg p-4 shadow-lg max-w-[300px]">
-        <div className="mb-2 text-gray-300 text-sm font-medium">
-          🎵 I am listening to...
-        </div>
-        <p className="text-gray-300">Loading...</p>
+      <div className="w-[380px] border border-black shadow-lg bg-gray-200 p-4 text-center">
+        <p>Loading Windows Media Player...</p>
       </div>
     )
   }
 
   return (
-    <div className="bg-white/10 backdrop-blur-md rounded-lg p-4 shadow-lg max-w-[300px]">
-      <div className="mb-2 text-gray-300 text-sm font-medium">
-        🎵{' '}
-        {trackData.isPlaying ? 'I am listening to...' : 'I last listened to...'}
+    <div className="w-[380px] border border-black bg-[#F1EFE2] shadow-lg">
+      {/* Title bar */}
+      <div className="bg-gradient-to-r from-[#0A246A] via-[#3A6EA5] to-[#0A246A] px-2 py-1 flex items-center justify-between">
+        <img src={spotifyIcon} alt="Window Icon" className="w-4 h-4" />
+        <div className="flex-1 font-bold">Paria's Media Player</div>
+        {/* Minimize, Maximize, Close buttons (just for show) */}
+        <div className="flex gap-1">
+          <button className="text-white hover:bg-[#1f3b69] px-2 rounded">
+            -
+          </button>
+          <button className="text-white hover:bg-[#1f3b69] px-2 rounded">
+            □
+          </button>
+          <button className="text-white hover:bg-red-600 px-2 rounded">
+            ✕
+          </button>
+        </div>
       </div>
-      <div className="flex items-center gap-3">
-        {trackData.albumImageUrl && (
+
+      {/* Menu bar */}
+      <div className="flex items-center text-xs bg-[#F1EFE2] text-black px-2 h-6">
+        <span className="mr-4 cursor-default">File</span>
+        <span className="mr-4 cursor-default">View</span>
+        <span className="mr-4 cursor-default">Play</span>
+        <span className="mr-4 cursor-default">Favorites</span>
+        <span className="mr-4 cursor-default">Go</span>
+        <span className="mr-4 cursor-default">Help</span>
+      </div>
+
+      {/* Main content area (album art + big black box) */}
+      <div className="bg-black h-40 flex items-center justify-center">
+        {trackData.albumImageUrl ? (
           <img
             src={trackData.albumImageUrl}
             alt={`${trackData.album} cover`}
-            className="w-12 h-12 rounded"
+            className="max-h-full max-w-full"
           />
+        ) : (
+          // Placeholder if there's no album art
+          <div className="text-white text-sm">No Album Art</div>
         )}
-        <div className="overflow-hidden">
-          <p className="text-white font-medium truncate">{trackData.name}</p>
-          <p className="text-gray-300 text-sm truncate">{trackData.artist}</p>
+      </div>
+
+      {/* Playback Controls */}
+      <div className="p-2 flex items-center gap-2 bg-[#F1EFE2]">
+        {/* Transport buttons (play, pause, next, etc.) */}
+        <button className="w-6 h-6 hover:bg-gray-400 border border-gray-400">
+          &#10074;&#10074;
+        </button>
+        <button className="w-6 h-6 hover:bg-gray-400 border border-gray-400">
+          &#9654;
+        </button>
+        <button className="w-6 h-6 hover:bg-gray-400 border border-gray-400">
+          &#9724;
+        </button>
+        <button className="w-6 h-6 hover:bg-gray-400 border border-gray-400">
+          &#9198;
+        </button>
+        <button className="w-6 h-6 hover:bg-gray-400 border border-gray-400">
+          &#9197;
+        </button>
+
+        {/* Seek bar placeholder */}
+        <div className="flex-1 border border-gray-400 bg-[#F1EFE2] h-2 rounded mx-2"></div>
+
+        {/* Volume slider placeholder */}
+        <div className="w-16 border border-gray-400 bg-[#F1EFE2] h-2 rounded"></div>
+      </div>
+
+      {/* Bottom metadata section (Show, Clip, Author, etc.) */}
+      <div className="text-xs px-2 py-1 bg-black space-y-1 border-t border-gray-400">
+        <div>
+          <strong>Show:</strong>{' '}
+          {trackData.isPlaying ? 'Currently Playing' : 'Last Played'}
+        </div>
+        <div>
+          <strong>Clip:</strong> {trackData.name}
+        </div>
+        <div>
+          <strong>Author:</strong> {trackData.artist}
+        </div>
+        <div>
+          <strong>Album:</strong> {trackData.album}
         </div>
       </div>
     </div>
