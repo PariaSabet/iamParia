@@ -1,6 +1,17 @@
 import { useState, useEffect } from 'react'
 import { getAccessToken } from '../utils/spotify'
 import spotifyIcon from '../assets/icons/spotify.png'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import {
+  faMinus,
+  faSquare,
+  faTimes,
+  faPause,
+  faPlay,
+  faStop,
+  faStepBackward,
+  faStepForward,
+} from '@fortawesome/free-solid-svg-icons'
 
 export interface SpotifyTrack {
   name: string
@@ -123,16 +134,16 @@ export function SpotifyNowPlaying() {
       <div className="bg-gradient-to-r from-[#0A246A] via-[#3A6EA5] to-[#0A246A] px-2 py-1 flex items-center justify-between">
         <img src={spotifyIcon} alt="Window Icon" className="w-4 h-4" />
         <div className="flex-1 font-bold">Paria's Media Player</div>
-        {/* Minimize, Maximize, Close buttons (just for show) */}
+        {/* Minimize, Maximize, Close buttons */}
         <div className="flex gap-1">
           <button className="text-white hover:bg-[#1f3b69] px-2 rounded">
-            -
+            <FontAwesomeIcon icon={faMinus} />
           </button>
           <button className="text-white hover:bg-[#1f3b69] px-2 rounded">
-            □
+            <FontAwesomeIcon icon={faSquare} />
           </button>
           <button className="text-white hover:bg-red-600 px-2 rounded">
-            ✕
+            <FontAwesomeIcon icon={faTimes} />
           </button>
         </div>
       </div>
@@ -163,21 +174,20 @@ export function SpotifyNowPlaying() {
 
       {/* Playback Controls */}
       <div className="p-2 flex items-center gap-2 bg-[#F1EFE2]">
-        {/* Transport buttons (play, pause, next, etc.) */}
         <button className="w-6 h-6 hover:bg-gray-400 border border-gray-400">
-          &#10074;&#10074;
+          <FontAwesomeIcon icon={faPause} />
         </button>
         <button className="w-6 h-6 hover:bg-gray-400 border border-gray-400">
-          &#9654;
+          <FontAwesomeIcon icon={faPlay} />
         </button>
         <button className="w-6 h-6 hover:bg-gray-400 border border-gray-400">
-          &#9724;
+          <FontAwesomeIcon icon={faStop} />
         </button>
         <button className="w-6 h-6 hover:bg-gray-400 border border-gray-400">
-          &#9198;
+          <FontAwesomeIcon icon={faStepBackward} />
         </button>
         <button className="w-6 h-6 hover:bg-gray-400 border border-gray-400">
-          &#9197;
+          <FontAwesomeIcon icon={faStepForward} />
         </button>
 
         {/* Seek bar placeholder */}
