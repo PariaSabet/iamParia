@@ -4,7 +4,6 @@ import spotifyIcon from '../assets/icons/spotify.png'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faMinus,
-  faSquare,
   faTimes,
   faPause,
   faPlay,
@@ -12,6 +11,7 @@ import {
   faStepBackward,
   faStepForward,
 } from '@fortawesome/free-solid-svg-icons'
+import { faSquare as faSquareRegular } from '@fortawesome/free-regular-svg-icons'
 
 export interface SpotifyTrack {
   name: string
@@ -140,7 +140,7 @@ export function SpotifyNowPlaying() {
             <FontAwesomeIcon icon={faMinus} />
           </button>
           <button className="text-white hover:bg-[#1f3b69] px-2 rounded">
-            <FontAwesomeIcon icon={faSquare} />
+            <FontAwesomeIcon icon={faSquareRegular} />
           </button>
           <button className="text-white hover:bg-red-600 px-2 rounded">
             <FontAwesomeIcon icon={faTimes} />
