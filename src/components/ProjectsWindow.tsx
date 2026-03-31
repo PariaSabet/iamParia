@@ -3,6 +3,7 @@ import folderIcon from '../assets/icons/folder.png'
 import randomMealGeneratorIcon from '../assets/icons/planning.png'
 import cssArtsIcon from '../assets/icons/css-file.png'
 import noteAppIcon from '../assets/icons/notes.png'
+import tcfFlashcardsIcon from '../assets/icons/notepad.png'
 import githubIcon from '../assets/icons/github.svg'
 
 interface Project {
@@ -43,6 +44,14 @@ export function ProjectsWindow({ isOpen, onClose }: ProjectsWindowProps) {
       link: 'https://noteappwithmarkdown.netlify.app/',
       icon: noteAppIcon,
       githubLink: 'https://github.com/PariaSabet/note-taking-app',
+    },
+    {
+      title: 'TCF Flashcards',
+      description: 'French TCF exam prep with interactive flashcards',
+
+      link: 'https://tcflearning.netlify.app/',
+      icon: tcfFlashcardsIcon,
+      githubLink: 'https://github.com/PariaSabet/tcf-flashcards',
     },
   ]
 
