@@ -4,6 +4,7 @@ import randomMealGeneratorIcon from '../assets/icons/planning.png'
 import cssArtsIcon from '../assets/icons/css-file.png'
 import noteAppIcon from '../assets/icons/notes.png'
 import tcfFlashcardsIcon from '../assets/icons/notepad.png'
+import pacePalIcon from '../assets/icons/running.png'
 import githubIcon from '../assets/icons/github.svg'
 
 interface Project {
@@ -52,6 +53,14 @@ export function ProjectsWindow({ isOpen, onClose }: ProjectsWindowProps) {
       link: 'https://tcflearning.netlify.app/',
       icon: tcfFlashcardsIcon,
       githubLink: 'https://github.com/PariaSabet/tcf-flashcards',
+    },
+    {
+      title: 'PacePal',
+      description: 'Running training plan generator',
+
+      link: 'https://pacepalrun.netlify.app/',
+      icon: pacePalIcon,
+      githubLink: 'https://github.com/PariaSabet/PacePal',
     },
   ]
 
