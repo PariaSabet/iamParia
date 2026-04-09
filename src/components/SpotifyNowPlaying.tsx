@@ -1,8 +1,8 @@
 import { useState, useEffect, useLayoutEffect, useRef } from 'react'
 import { getAccessToken } from '../utils/spotify'
-import spotifyIcon from '../assets/icons/spotify.png'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
+  faMusic,
   faPause,
   faPlay,
   faStop,
@@ -41,6 +41,93 @@ interface SpotifyNowPlayingProps {
   minimizeTargetRect?: DOMRect | null
 }
 
+const STREAMING_PREF_STORAGE_KEY = 'iamParia.preferredStreaming'
+
+type StreamingServiceId =
+  | 'spotify'
+  | 'apple_music'
+  | 'youtube_music'
+  | 'youtube'
+  | 'deezer'
+  | 'tidal'
+  | 'amazon_music'
+
+function buildStreamingLinks(track: {
+  name: string
+  artist: string
+  spotifyUrl: string
+}): Array<{ id: StreamingServiceId; label: string; url: string }> {
+  const term = encodeURIComponent(`${track.artist} ${track.name}`.trim())
+  return [
+    {
+      id: 'spotify',
+      label: 'Spotify',
+      url:
+        track.spotifyUrl ||
+        `https://open.spotify.com/search/${term}`,
+    },
+    {
+      id: 'apple_music',
+      label: 'Apple Music',
+      url: `https://music.apple.com/us/search?term=${term}`,
+    },
+    {
+      id: 'youtube_music',
+      label: 'YouTube Music',
+      url: `https://music.youtube.com/search?q=${term}`,
+    },
+    {
+      id: 'youtube',
+      label: 'YouTube',
+      url: `https://www.youtube.com/results?search_query=${term}`,
+    },
+    {
+      id: 'deezer',
+      label: 'Deezer',
+      url: `https://www.deezer.com/search/${term}`,
+    },
+    {
+      id: 'tidal',
+      label: 'Tidal',
+      url: `https://listen.tidal.com/search?q=${term}`,
+    },
+    {
+      id: 'amazon_music',
+      label: 'Amazon Music',
+      url: `https://music.amazon.com/search?q=${term}`,
+    },
+  ]
+}
+
+function readPreferredStreamingId(): StreamingServiceId | null {
+  try {
+    const raw = localStorage.getItem(STREAMING_PREF_STORAGE_KEY)
+    if (!raw) return null
+    const allowed: StreamingServiceId[] = [
+      'spotify',
+      'apple_music',
+      'youtube_music',
+      'youtube',
+      'deezer',
+      'tidal',
+      'amazon_music',
+    ]
+    return allowed.includes(raw as StreamingServiceId)
+      ? (raw as StreamingServiceId)
+      : null
+  } catch {
+    return null
+  }
+}
+
+function rememberPreferredStreaming(id: StreamingServiceId) {
+  try {
+    localStorage.setItem(STREAMING_PREF_STORAGE_KEY, id)
+  } catch {
+    /* ignore quota / private mode */
+  }
+}
+
 export function SpotifyNowPlaying({
   isMinimized,
   onMinimize,
@@ -56,8 +143,12 @@ export function SpotifyNowPlaying({
     'translate(0px, 0px) scale(1, 1)'
   )
   const playerRef = useRef<HTMLDivElement>(null)
+  const helpNoteRef = useRef<HTMLDivElement>(null)
+  const playMenuContainerRef = useRef<HTMLDivElement>(null)
   const animationTimeoutRef = useRef<number | null>(null)
   const previousMinimizedRef = useRef(minimized)
+  const [helpNoteVisible, setHelpNoteVisible] = useState(false)
+  const [playMenuOpen, setPlayMenuOpen] = useState(false)
   const [trackData, setTrackData] = useState<{
     name: string
     artist: string
@@ -252,10 +343,43 @@ export function SpotifyNowPlaying({
   const isAnimating = isMinimizing || isRestoring
   const isHidden = minimized && !isAnimating
 
-  const openTrackInSpotify = () => {
-    if (!trackData?.spotifyUrl) return
-    window.open(trackData.spotifyUrl, '_blank', 'noopener,noreferrer')
+  const openTrackOnPreferredService = () => {
+    if (!trackData) return
+    const links = buildStreamingLinks(trackData)
+    const pref = readPreferredStreamingId()
+    const match = pref ? links.find((l) => l.id === pref) : undefined
+    const chosen = match ?? links[0]
+    if (chosen?.url) {
+      window.open(chosen.url, '_blank', 'noopener,noreferrer')
+    }
   }
+
+  useEffect(() => {
+    if (!playMenuOpen) return
+    const onDocMouseDown = (e: MouseEvent) => {
+      const el = playMenuContainerRef.current
+      if (el && !el.contains(e.target as Node)) {
+        setPlayMenuOpen(false)
+      }
+    }
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setPlayMenuOpen(false)
+    }
+    document.addEventListener('mousedown', onDocMouseDown)
+    document.addEventListener('keydown', onKeyDown)
+    return () => {
+      document.removeEventListener('mousedown', onDocMouseDown)
+      document.removeEventListener('keydown', onKeyDown)
+    }
+  }, [playMenuOpen])
+
+  useEffect(() => {
+    if (!helpNoteVisible) return
+    const el = helpNoteRef.current
+    if (!el) return
+    el.focus()
+    el.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+  }, [helpNoteVisible])
 
   const transportSecondaryClass =
     'inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-sm border border-neutral-500/70 bg-gradient-to-b from-[#fdfcf7] to-[#dad7cb] text-neutral-900 shadow-[inset_0_1px_0_rgba(255,255,255,0.75)] transition hover:brightness-[1.04] active:shadow-[inset_0_1px_3px_rgba(0,0,0,0.18)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2b579a] focus-visible:ring-offset-1 focus-visible:ring-offset-[#F1EFE2] disabled:pointer-events-none disabled:opacity-40'
@@ -279,10 +403,16 @@ export function SpotifyNowPlaying({
             : undefined,
         }}
       >
-        <p>Loading Windows Media Player...</p>
+        <p>Loading Paria&apos;s Media Player...</p>
       </div>
     )
   }
+
+  const streamingLinksForToolbar = buildStreamingLinks(trackData)
+  const preferredStreamingId = readPreferredStreamingId()
+  const preferredStreamingLabel = preferredStreamingId
+    ? streamingLinksForToolbar.find((l) => l.id === preferredStreamingId)?.label
+    : null
 
   return (
     <div
@@ -299,11 +429,20 @@ export function SpotifyNowPlaying({
       }}
     >
       {/* Title bar */}
-      <div className="bg-gradient-to-r from-[#0A246A] via-[#3A6EA5] to-[#0A246A] px-2 py-1 flex items-center justify-between text-white">
-        <img src={spotifyIcon} alt="Window Icon" className="w-4 h-4" />
-        <div className="flex-1 font-bold">Paria's Media Player</div>
+      <div className="flex items-center justify-between border-b border-black/25 bg-gradient-to-r from-[#0A246A] via-[#3A6EA5] to-[#0A246A] px-2 py-1 font-['Tahoma','Segoe_UI',system-ui,sans-serif] text-white">
+        <div className="flex min-w-0 flex-1 items-center gap-2 pr-2">
+          <span
+            className="flex h-4 w-4 shrink-0 items-center justify-center opacity-95"
+            aria-hidden={true}
+          >
+            <FontAwesomeIcon icon={faMusic} className="h-3.5 w-3.5" />
+          </span>
+          <div className="min-w-0 flex-1 truncate text-[13px] font-bold tracking-tight">
+            Paria&apos;s Media Player
+          </div>
+        </div>
         {/* Minimize, Maximize, Close buttons */}
-        <div className="flex gap-1">
+        <div className="flex shrink-0 gap-1">
           <button
             type="button"
             className="w-6 h-5 flex items-center justify-center rounded border border-white/25 bg-white/15 text-white/95 transition-colors hover:bg-white/25 active:bg-white/35"
@@ -380,14 +519,83 @@ export function SpotifyNowPlaying({
       {isHidden ? null : (
         <>
           {/* Menu bar */}
-          <div className="flex items-center text-xs bg-[#F1EFE2] text-black px-2 h-6">
-            <span className="mr-4 cursor-default">File</span>
-            <span className="mr-4 cursor-default">View</span>
-            <span className="mr-4 cursor-default">Play</span>
-            <span className="mr-4 cursor-default">Favorites</span>
-            <span className="mr-4 cursor-default">Go</span>
-            <span className="mr-4 cursor-default">Help</span>
+          <div className="flex h-6 items-center border-b border-black/10 bg-[#F1EFE2] px-1 font-['Tahoma','Segoe_UI',system-ui,sans-serif] text-xs text-black">
+            <span className="mr-1 cursor-default rounded px-1.5 py-0.5 transition-colors hover:bg-black/5">
+              File
+            </span>
+            <span className="mr-1 cursor-default rounded px-1.5 py-0.5 transition-colors hover:bg-black/5">
+              View
+            </span>
+            <div className="relative mr-1" ref={playMenuContainerRef}>
+              <button
+                type="button"
+                className="cursor-pointer rounded border-0 bg-transparent px-1.5 py-0.5 text-inherit transition-colors hover:bg-black/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2b579a] focus-visible:ring-offset-0"
+                aria-label="Play — choose a streaming service"
+                aria-haspopup="menu"
+                aria-expanded={playMenuOpen}
+                aria-controls="media-player-play-menu"
+                onClick={() => setPlayMenuOpen((o) => !o)}
+              >
+                Play
+              </button>
+              {playMenuOpen ? (
+                <div
+                  id="media-player-play-menu"
+                  role="menu"
+                  aria-label="Open track on a streaming service"
+                  className="absolute left-0 top-full z-40 mt-0.5 min-w-[10.5rem] border border-neutral-600 bg-[#ece9d8] py-0.5 font-['Tahoma','Segoe_UI',system-ui,sans-serif] shadow-[2px_2px_4px_rgba(0,0,0,0.25)]"
+                >
+                  {buildStreamingLinks(trackData).map((item) => (
+                    <button
+                      key={item.id}
+                      type="button"
+                      role="menuitem"
+                      className="block w-full px-3 py-1 text-left text-xs text-black transition-colors hover:bg-[#316ac5] hover:text-white focus-visible:bg-[#316ac5] focus-visible:text-white focus-visible:outline-none"
+                      onClick={() => {
+                        rememberPreferredStreaming(item.id)
+                        window.open(item.url, '_blank', 'noopener,noreferrer')
+                        setPlayMenuOpen(false)
+                      }}
+                    >
+                      {item.label}
+                    </button>
+                  ))}
+                </div>
+              ) : null}
+            </div>
+            <span className="mr-1 cursor-default rounded px-1.5 py-0.5 transition-colors hover:bg-black/5">
+              Favorites
+            </span>
+            <span className="mr-1 cursor-default rounded px-1.5 py-0.5 transition-colors hover:bg-black/5">
+              Go
+            </span>
+            <button
+              type="button"
+              className="mr-1 cursor-pointer rounded border-0 bg-transparent px-1.5 py-0.5 text-inherit transition-colors hover:bg-black/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2b579a] focus-visible:ring-offset-0"
+              onClick={() => setHelpNoteVisible((v) => !v)}
+              aria-expanded={helpNoteVisible}
+              aria-controls="media-player-help-note"
+              aria-label="Help — about this player"
+            >
+              Help
+            </button>
           </div>
+
+          {helpNoteVisible ? (
+            <div
+              ref={helpNoteRef}
+              id="media-player-help-note"
+              tabIndex={-1}
+              className="border-b border-gray-400 bg-[#fffacd] px-2 py-1.5 text-[11px] leading-snug text-neutral-900 outline-none ring-2 ring-inset ring-[#2b579a]/40"
+            >
+              Track and playback status come from the{' '}
+              <strong>Spotify Web API</strong> (currently playing and recently
+              played). Use <strong>Play</strong> to open this track on Spotify,
+              Apple Music, YouTube Music, and more (other apps use a search for
+              this artist and title). Your choice is remembered for the toolbar
+              play button. Skip and stop only work inside each app.
+            </div>
+          ) : null}
 
           {/* Main content area (album art + big black box) */}
           <div className="bg-black h-40 flex items-center justify-center">
@@ -409,12 +617,20 @@ export function SpotifyNowPlaying({
               type="button"
               className={transportPrimaryClass}
               aria-label={
-                trackData.isPlaying
-                  ? 'Open in Spotify (currently playing)'
-                  : 'Open in Spotify to play'
+                preferredStreamingLabel
+                  ? trackData.isPlaying
+                    ? `Open in ${preferredStreamingLabel} (currently playing)`
+                    : `Open in ${preferredStreamingLabel}`
+                  : trackData.isPlaying
+                    ? 'Open in Spotify (currently playing)'
+                    : 'Open in Spotify'
               }
-              onClick={openTrackInSpotify}
-              disabled={!trackData.spotifyUrl}
+              title={
+                preferredStreamingLabel
+                  ? `Opens in ${preferredStreamingLabel}. Change from the Play menu.`
+                  : 'Opens in Spotify. Choose another app from the Play menu.'
+              }
+              onClick={openTrackOnPreferredService}
             >
               <FontAwesomeIcon
                 icon={trackData.isPlaying ? faPause : faPlay}
@@ -474,8 +690,11 @@ export function SpotifyNowPlaying({
             </div>
           </div>
 
-          {/* Bottom metadata section (Show, Clip, Author, etc.) */}
+          {/* Bottom metadata section (Source, Show, Clip, Author, etc.) */}
           <div className="text-xs px-2 py-1 bg-black space-y-1 border-t border-gray-400">
+            <div>
+              <strong>Source:</strong> Spotify
+            </div>
             <div>
               <strong>Show:</strong>{' '}
               {trackData.isPlaying ? 'Currently Playing' : 'Last Played'}
