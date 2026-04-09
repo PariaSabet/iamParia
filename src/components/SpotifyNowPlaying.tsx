@@ -64,6 +64,7 @@ export function SpotifyNowPlaying({
     album: string
     albumImageUrl: string
     isPlaying: boolean
+    spotifyUrl: string
   } | null>(null)
 
   useEffect(() => {
@@ -94,6 +95,7 @@ export function SpotifyNowPlaying({
             album: currentData.item.album.name,
             albumImageUrl: currentData.item.album.images[0]?.url,
             isPlaying: currentData.is_playing,
+            spotifyUrl: currentData.item.external_urls.spotify,
           })
         } else {
           // If nothing is playing, get recently played
@@ -123,6 +125,7 @@ export function SpotifyNowPlaying({
                 album: lastPlayed.album.name,
                 albumImageUrl: lastPlayed.album.images[0]?.url,
                 isPlaying: false,
+                spotifyUrl: lastPlayed.external_urls.spotify,
               })
             }
           }
@@ -249,6 +252,17 @@ export function SpotifyNowPlaying({
   const isAnimating = isMinimizing || isRestoring
   const isHidden = minimized && !isAnimating
 
+  const openTrackInSpotify = () => {
+    if (!trackData?.spotifyUrl) return
+    window.open(trackData.spotifyUrl, '_blank', 'noopener,noreferrer')
+  }
+
+  const transportSecondaryClass =
+    'inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-sm border border-neutral-500/70 bg-gradient-to-b from-[#fdfcf7] to-[#dad7cb] text-neutral-900 shadow-[inset_0_1px_0_rgba(255,255,255,0.75)] transition hover:brightness-[1.04] active:shadow-[inset_0_1px_3px_rgba(0,0,0,0.18)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2b579a] focus-visible:ring-offset-1 focus-visible:ring-offset-[#F1EFE2] disabled:pointer-events-none disabled:opacity-40'
+
+  const transportPrimaryClass =
+    'inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-sm border border-neutral-600/80 bg-gradient-to-b from-white to-[#d2cfc3] text-neutral-900 shadow-[inset_0_1px_0_rgba(255,255,255,0.9)] transition hover:brightness-[1.05] active:shadow-[inset_0_1px_3px_rgba(0,0,0,0.2)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2b579a] focus-visible:ring-offset-1 focus-visible:ring-offset-[#F1EFE2]'
+
   // If data not loaded, show loading
   if (!trackData) {
     return (
@@ -285,12 +299,13 @@ export function SpotifyNowPlaying({
       }}
     >
       {/* Title bar */}
-      <div className="bg-gradient-to-r from-[#0A246A] via-[#3A6EA5] to-[#0A246A] px-2 py-1 flex items-center justify-between">
+      <div className="bg-gradient-to-r from-[#0A246A] via-[#3A6EA5] to-[#0A246A] px-2 py-1 flex items-center justify-between text-white">
         <img src={spotifyIcon} alt="Window Icon" className="w-4 h-4" />
         <div className="flex-1 font-bold">Paria's Media Player</div>
         {/* Minimize, Maximize, Close buttons */}
         <div className="flex gap-1">
           <button
+            type="button"
             className="w-6 h-5 flex items-center justify-center rounded border border-white/25 bg-white/15 text-white/95 transition-colors hover:bg-white/25 active:bg-white/35"
             aria-label="Minimize media player"
             onClick={handleMinimize}
@@ -305,6 +320,7 @@ export function SpotifyNowPlaying({
             </svg>
           </button>
           <button
+            type="button"
             className="w-6 h-5 flex items-center justify-center rounded border border-white/25 bg-white/15 text-white/95 transition-colors hover:bg-white/25 active:bg-white/35"
             aria-label={minimized ? 'Restore media player' : 'Maximize media player'}
             onClick={handleRestore}
@@ -341,6 +357,7 @@ export function SpotifyNowPlaying({
             )}
           </button>
           <button
+            type="button"
             className="w-6 h-5 flex items-center justify-center rounded border border-[#b63f3f] bg-[#d9534f]/85 text-white transition-colors hover:bg-[#e05f5b] active:bg-[#c84c48]"
             aria-label="Close media player"
           >
@@ -387,28 +404,74 @@ export function SpotifyNowPlaying({
           </div>
 
           {/* Playback Controls */}
-          <div className="p-2 flex items-center gap-2 bg-[#F1EFE2]">
-            <button className="w-6 h-6 hover:bg-gray-400 border border-gray-400">
-              <FontAwesomeIcon icon={faPause} />
+          <div className="p-2 flex items-center gap-1.5 bg-[#F1EFE2] text-neutral-900">
+            <button
+              type="button"
+              className={transportPrimaryClass}
+              aria-label={
+                trackData.isPlaying
+                  ? 'Open in Spotify (currently playing)'
+                  : 'Open in Spotify to play'
+              }
+              onClick={openTrackInSpotify}
+              disabled={!trackData.spotifyUrl}
+            >
+              <FontAwesomeIcon
+                icon={trackData.isPlaying ? faPause : faPlay}
+                className="h-4 w-4"
+              />
             </button>
-            <button className="w-6 h-6 hover:bg-gray-400 border border-gray-400">
-              <FontAwesomeIcon icon={faPlay} />
+            <button
+              type="button"
+              className={transportSecondaryClass}
+              aria-label="Previous track (use Spotify app)"
+              title="Use the Spotify app to change tracks"
+              disabled
+            >
+              <FontAwesomeIcon icon={faStepBackward} className="h-3 w-3" />
             </button>
-            <button className="w-6 h-6 hover:bg-gray-400 border border-gray-400">
-              <FontAwesomeIcon icon={faStop} />
+            <button
+              type="button"
+              className={transportSecondaryClass}
+              aria-label="Next track (use Spotify app)"
+              title="Use the Spotify app to change tracks"
+              disabled
+            >
+              <FontAwesomeIcon icon={faStepForward} className="h-3 w-3" />
             </button>
-            <button className="w-6 h-6 hover:bg-gray-400 border border-gray-400">
-              <FontAwesomeIcon icon={faStepBackward} />
-            </button>
-            <button className="w-6 h-6 hover:bg-gray-400 border border-gray-400">
-              <FontAwesomeIcon icon={faStepForward} />
+            <button
+              type="button"
+              className={transportSecondaryClass}
+              aria-label="Stop (use Spotify app)"
+              title="Use the Spotify app to stop playback"
+              disabled
+            >
+              <FontAwesomeIcon icon={faStop} className="h-3 w-3" />
             </button>
 
-            {/* Seek bar placeholder */}
-            <div className="flex-1 border border-gray-400 bg-[#F1EFE2] h-2 rounded mx-2"></div>
+            <div
+              className="flex-1 mx-1.5 h-2.5 min-w-0 rounded-full border border-neutral-500/55 bg-[#b8b4a8]/35 shadow-[inset_0_1px_2px_rgba(0,0,0,0.15)] overflow-hidden"
+              title="Position updates in Spotify"
+              role="presentation"
+            >
+              <div
+                className="h-full rounded-full bg-gradient-to-b from-[#7eb3eb] to-[#2b579a] shadow-[inset_0_1px_0_rgba(255,255,255,0.35)] transition-[width] duration-700 ease-out"
+                style={{
+                  width: trackData.isPlaying ? '40%' : '12%',
+                }}
+              />
+            </div>
 
-            {/* Volume slider placeholder */}
-            <div className="w-16 border border-gray-400 bg-[#F1EFE2] h-2 rounded"></div>
+            <div
+              className="w-[4.25rem] shrink-0 h-2.5 rounded-full border border-neutral-500/55 bg-[#b8b4a8]/35 shadow-[inset_0_1px_2px_rgba(0,0,0,0.15)] overflow-hidden"
+              title="Volume in Spotify"
+              role="presentation"
+            >
+              <div
+                className="h-full rounded-full bg-gradient-to-b from-[#9a9a9a] to-[#4a4a4a] shadow-[inset_0_1px_0_rgba(255,255,255,0.25)]"
+                style={{ width: '68%' }}
+              />
+            </div>
           </div>
 
           {/* Bottom metadata section (Show, Clip, Author, etc.) */}
