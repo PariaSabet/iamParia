@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { TaskBar } from './TaskBar'
 import { DesktopIcon } from './DesktopIcon'
@@ -93,13 +93,34 @@ const desktopIcons = [
 
 export function WelcomeScreen() {
   const [isProjectsOpen, setIsProjectsOpen] = useState(false)
+  const [isProjectsMinimized, setIsProjectsMinimized] = useState(false)
   const [isGamesOpen, setIsGamesOpen] = useState(false)
+  const [isGamesMinimized, setIsGamesMinimized] = useState(false)
   const [isNotepadOpen, setIsNotepadOpen] = useState(false)
+  const [isNotepadMinimized, setIsNotepadMinimized] = useState(false)
+  const taskbarButtonRefs = useRef<Record<string, HTMLButtonElement | null>>({})
   const navigate = useNavigate()
 
-  desktopIcons[0].onClick = () => setIsProjectsOpen(true)
-  desktopIcons[1].onClick = () => setIsGamesOpen(true)
-  desktopIcons[2].onClick = () => setIsNotepadOpen(true)
+  const setTaskbarButtonRef =
+    (windowId: string) => (el: HTMLButtonElement | null) => {
+      taskbarButtonRefs.current[windowId] = el
+    }
+
+  const getMinimizeTargetRect = (windowId: string) =>
+    taskbarButtonRefs.current[windowId]?.getBoundingClientRect() ?? null
+
+  desktopIcons[0].onClick = () => {
+    setIsProjectsOpen(true)
+    setIsProjectsMinimized(false)
+  }
+  desktopIcons[1].onClick = () => {
+    setIsGamesOpen(true)
+    setIsGamesMinimized(false)
+  }
+  desktopIcons[2].onClick = () => {
+    setIsNotepadOpen(true)
+    setIsNotepadMinimized(false)
+  }
   desktopIcons[12].onClick = () => navigate('/ai-clone')
 
   return (
@@ -125,15 +146,75 @@ export function WelcomeScreen() {
           ))}
         </div>
       </div>
-      <TaskBar />
+      <TaskBar
+        windows={[
+          ...(isProjectsOpen
+            ? [
+                {
+                  id: 'projects',
+                  title: 'My Projects',
+                  icon: folderIcon,
+                  isMinimized: isProjectsMinimized,
+                  onClick: () => setIsProjectsMinimized((prev) => !prev),
+                  buttonRef: setTaskbarButtonRef('projects'),
+                },
+              ]
+            : []),
+          ...(isGamesOpen
+            ? [
+                {
+                  id: 'games',
+                  title: 'Games',
+                  icon: gameIcon,
+                  isMinimized: isGamesMinimized,
+                  onClick: () => setIsGamesMinimized((prev) => !prev),
+                  buttonRef: setTaskbarButtonRef('games'),
+                },
+              ]
+            : []),
+          ...(isNotepadOpen
+            ? [
+                {
+                  id: 'notepad',
+                  title: 'About Me',
+                  icon: notepadIcon,
+                  isMinimized: isNotepadMinimized,
+                  onClick: () => setIsNotepadMinimized((prev) => !prev),
+                  buttonRef: setTaskbarButtonRef('notepad'),
+                },
+              ]
+            : []),
+        ]}
+      />
       <ProjectsWindow
         isOpen={isProjectsOpen}
-        onClose={() => setIsProjectsOpen(false)}
+        isMinimized={isProjectsMinimized}
+        minimizeTargetRect={getMinimizeTargetRect('projects')}
+        onMinimize={() => setIsProjectsMinimized(true)}
+        onClose={() => {
+          setIsProjectsOpen(false)
+          setIsProjectsMinimized(false)
+        }}
       />
-      <GamesWindow isOpen={isGamesOpen} onClose={() => setIsGamesOpen(false)} />
+      <GamesWindow
+        isOpen={isGamesOpen}
+        isMinimized={isGamesMinimized}
+        minimizeTargetRect={getMinimizeTargetRect('games')}
+        onMinimize={() => setIsGamesMinimized(true)}
+        onClose={() => {
+          setIsGamesOpen(false)
+          setIsGamesMinimized(false)
+        }}
+      />
       <NotepadWindow
         isOpen={isNotepadOpen}
-        onClose={() => setIsNotepadOpen(false)}
+        isMinimized={isNotepadMinimized}
+        minimizeTargetRect={getMinimizeTargetRect('notepad')}
+        onMinimize={() => setIsNotepadMinimized(true)}
+        onClose={() => {
+          setIsNotepadOpen(false)
+          setIsNotepadMinimized(false)
+        }}
       />
       <div className="fixed bottom-12 right-4">
         <SpotifyNowPlaying />

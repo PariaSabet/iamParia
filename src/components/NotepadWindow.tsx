@@ -1,44 +1,35 @@
 import { marked } from 'marked'
 import icon from '../assets/icons/notepad.png'
 import markdownContent from '../assets/content/AboutMe'
+import { WindowModal } from './WindowModal'
 
 interface NotepadWindowProps {
   isOpen: boolean
   onClose: () => void
+  onMinimize?: () => void
+  isMinimized?: boolean
+  minimizeTargetRect?: DOMRect | null
 }
 
-export function NotepadWindow({ isOpen, onClose }: NotepadWindowProps) {
-  if (!isOpen) return null
-
+export function NotepadWindow({
+  isOpen,
+  onClose,
+  onMinimize,
+  isMinimized = false,
+  minimizeTargetRect = null,
+}: NotepadWindowProps) {
   return (
-    <div className="fixed inset-0 flex items-center justify-center z-50">
-      <div
-        className="absolute inset-0 bg-black bg-opacity-50"
-        onClick={onClose}
-      ></div>
-      <div className="relative bg-[#ECE9D8] text-black w-[800px] h-[600px] rounded-lg shadow-xl">
-        {/* Window Title Bar */}
-        <div className="bg-gradient-to-r from-[#0A246A] via-[#3A6EA5] to-[#0A246A] px-2 py-1 flex items-center justify-between rounded-t-lg">
-          <div className="flex items-center gap-2">
-            <img src={icon} alt="Window Icon" className="w-4 h-4" />
-            <span className="text-white">notepad</span>
-          </div>
-          <div className="flex gap-1">
-            <button className="text-white hover:bg-[#1f3b69] px-2 rounded">
-              -
-            </button>
-            <button className="text-white hover:bg-[#1f3b69] px-2 rounded">
-              □
-            </button>
-            <button
-              onClick={onClose}
-              className="text-white hover:bg-red-600 px-2 rounded"
-            >
-              ✕
-            </button>
-          </div>
-        </div>
-
+    <WindowModal
+      isOpen={isOpen}
+      onClose={onClose}
+      onMinimize={onMinimize}
+      isMinimized={isMinimized}
+      minimizeTargetRect={minimizeTargetRect}
+      title="notepad"
+      icon={icon}
+      itemCount={1}
+    >
+      <>
         <div className="bg-[#F1EFE2] border-b border-[#919B9C] px-2 py-1 flex justify-start gap-3">
           <span className="text-sm">File</span>
           <span className="text-sm">Edit</span>
@@ -54,7 +45,7 @@ export function NotepadWindow({ isOpen, onClose }: NotepadWindowProps) {
           />
           <textarea disabled className="w-full h-full p-2" />
         </div>
-      </div>
-    </div>
+      </>
+    </WindowModal>
   )
 }

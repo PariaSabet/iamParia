@@ -15,9 +15,18 @@ interface Game {
 interface GamesWindowProps {
   isOpen: boolean
   onClose: () => void
+  onMinimize?: () => void
+  isMinimized?: boolean
+  minimizeTargetRect?: DOMRect | null
 }
 
-export function GamesWindow({ isOpen, onClose }: GamesWindowProps) {
+export function GamesWindow({
+  isOpen,
+  onClose,
+  onMinimize,
+  isMinimized = false,
+  minimizeTargetRect = null,
+}: GamesWindowProps) {
   const games: Game[] = [
     {
       title: 'Tic-Tac-Toe',
@@ -39,6 +48,9 @@ export function GamesWindow({ isOpen, onClose }: GamesWindowProps) {
     <WindowModal
       isOpen={isOpen}
       onClose={onClose}
+      onMinimize={onMinimize}
+      isMinimized={isMinimized}
+      minimizeTargetRect={minimizeTargetRect}
       title="Games"
       icon={folderIcon}
       itemCount={games.length}

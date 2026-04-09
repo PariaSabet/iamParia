@@ -18,9 +18,18 @@ interface Project {
 interface ProjectsWindowProps {
   isOpen: boolean
   onClose: () => void
+  onMinimize?: () => void
+  isMinimized?: boolean
+  minimizeTargetRect?: DOMRect | null
 }
 
-export function ProjectsWindow({ isOpen, onClose }: ProjectsWindowProps) {
+export function ProjectsWindow({
+  isOpen,
+  onClose,
+  onMinimize,
+  isMinimized = false,
+  minimizeTargetRect = null,
+}: ProjectsWindowProps) {
   const projects: Project[] = [
     {
       title: 'Meal Generator',
@@ -68,6 +77,9 @@ export function ProjectsWindow({ isOpen, onClose }: ProjectsWindowProps) {
     <WindowModal
       isOpen={isOpen}
       onClose={onClose}
+      onMinimize={onMinimize}
+      isMinimized={isMinimized}
+      minimizeTargetRect={minimizeTargetRect}
       title="My Projects"
       icon={folderIcon}
       itemCount={projects.length}

@@ -3,7 +3,20 @@ import startIcon from '../assets/logo.svg'
 import spotifyIcon from '../assets/icons/spotify.png'
 import { StartMenu } from './StartMenu'
 
-export function TaskBar() {
+interface TaskBarWindowItem {
+  id: string
+  title: string
+  icon?: string
+  isMinimized: boolean
+  onClick: () => void
+  buttonRef?: (el: HTMLButtonElement | null) => void
+}
+
+interface TaskBarProps {
+  windows?: TaskBarWindowItem[]
+}
+
+export function TaskBar({ windows = [] }: TaskBarProps) {
   const [currentTime, setCurrentTime] = useState('')
   const [isStartMenuOpen, setIsStartMenuOpen] = useState(false)
 
@@ -41,6 +54,26 @@ export function TaskBar() {
         >
           <img src={startIcon} alt="Start" className="w-6 h-6 mr-2 inline" />
           <span className="text-white">Start</span>
+        </div>
+        <div className="flex-1 h-full flex items-center gap-2 px-2 overflow-x-auto">
+          {windows.map((windowItem) => (
+            <button
+              key={windowItem.id}
+              ref={windowItem.buttonRef}
+              onClick={windowItem.onClick}
+              className={`h-7 min-w-32 max-w-44 text-sm px-2 rounded flex items-center gap-2 border border-[#092E51] ${
+                windowItem.isMinimized
+                  ? 'bg-[#1f4f86] text-white'
+                  : 'bg-[#2C63A8] text-white'
+              }`}
+              title={windowItem.isMinimized ? `Restore ${windowItem.title}` : `Minimize ${windowItem.title}`}
+            >
+              {windowItem.icon ? (
+                <img src={windowItem.icon} alt="" className="w-4 h-4" />
+              ) : null}
+              <span className="truncate">{windowItem.title}</span>
+            </button>
+          ))}
         </div>
         <div className="flex items-center h-full">
           <div className="flex h-full float-right font-['calibri'] bg-[linear-gradient(to_bottom,#1290E9_0%,#19B9F3_9%,#1290E9_18%,#1290E9_92%,#1941A5_100%)] bg-center bg-no-repeat bg-cover shadow-[inset_0px_5px_10px_#14A5F0,0px_5px_10px_#333333] py-[9px] pr-6 pl-4 border-l border-[#092E51] text-shadow cursor-pointer uppercase">
