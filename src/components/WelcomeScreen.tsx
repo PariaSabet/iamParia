@@ -21,6 +21,7 @@ import gameIcon from '../assets/icons/folder-games.png'
 import { GamesWindow } from './GamesWindow'
 import notepadIcon from '../assets/icons/notepad.png'
 import aiCloneIcon from '../assets/icons/ai.png'
+import spotifyIcon from '../assets/icons/spotify.png'
 
 const desktopIcons = [
   {
@@ -98,6 +99,7 @@ export function WelcomeScreen() {
   const [isGamesMinimized, setIsGamesMinimized] = useState(false)
   const [isNotepadOpen, setIsNotepadOpen] = useState(false)
   const [isNotepadMinimized, setIsNotepadMinimized] = useState(false)
+  const [isMediaPlayerMinimized, setIsMediaPlayerMinimized] = useState(false)
   const taskbarButtonRefs = useRef<Record<string, HTMLButtonElement | null>>({})
   const navigate = useNavigate()
 
@@ -184,6 +186,14 @@ export function WelcomeScreen() {
                 },
               ]
             : []),
+          {
+            id: 'media-player',
+            title: "Paria's Media Player",
+            icon: spotifyIcon,
+            isMinimized: isMediaPlayerMinimized,
+            onClick: () => setIsMediaPlayerMinimized((prev) => !prev),
+            buttonRef: setTaskbarButtonRef('media-player'),
+          },
         ]}
       />
       <ProjectsWindow
@@ -217,7 +227,12 @@ export function WelcomeScreen() {
         }}
       />
       <div className="fixed bottom-12 right-4">
-        <SpotifyNowPlaying />
+        <SpotifyNowPlaying
+          isMinimized={isMediaPlayerMinimized}
+          minimizeTargetRect={getMinimizeTargetRect('media-player')}
+          onMinimize={() => setIsMediaPlayerMinimized(true)}
+          onRestore={() => setIsMediaPlayerMinimized(false)}
+        />
       </div>
     </div>
   )

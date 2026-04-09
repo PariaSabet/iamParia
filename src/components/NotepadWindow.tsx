@@ -28,9 +28,10 @@ export function NotepadWindow({
       title="notepad"
       icon={icon}
       itemCount={1}
+      showExplorerChrome={false}
     >
-      <>
-        <div className="bg-[#F1EFE2] border-b border-[#919B9C] px-2 py-1 flex justify-start gap-3">
+      <div className="flex h-full min-h-0 flex-col">
+        <div className="shrink-0 bg-[#F1EFE2] border-b border-[#919B9C] px-2 py-1 flex justify-start gap-3">
           <span className="text-sm">File</span>
           <span className="text-sm">Edit</span>
           <span className="text-sm">Format</span>
@@ -38,14 +39,14 @@ export function NotepadWindow({
           <span className="text-sm">Help</span>
         </div>
 
-        <div className="p-4 overflow-auto h-[calc(100%-5rem)] bg-white font-mono">
+        <div className="min-h-0 flex-1 overflow-auto bg-white p-0 font-mono">
           <div
-            className="markdown-preview"
+            className="markdown-preview px-2 py-1"
             dangerouslySetInnerHTML={{ __html: marked(markdownContent) }}
           />
-          <textarea disabled className="w-full h-full p-2" />
+          <textarea disabled className="w-full border-0 bg-transparent px-2 py-1" />
         </div>
-      </>
+      </div>
     </WindowModal>
   )
 }

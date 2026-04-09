@@ -11,6 +11,8 @@ interface WindowModalProps {
   icon?: string
   children: React.ReactNode
   itemCount?: number
+  /** Explorer-style View + Address rows (My Computer path). Off for app windows like Notepad. */
+  showExplorerChrome?: boolean
 }
 
 export function WindowModal({
@@ -23,15 +25,18 @@ export function WindowModal({
   icon = folderIcon,
   children,
   itemCount,
+  showExplorerChrome = true,
 }: WindowModalProps) {
   const WINDOW_WIDTH = 800
   const WINDOW_HEIGHT = 600
+  const TASKBAR_HEIGHT = 40
   const MINIMIZE_ANIMATION_MS = 240
   const [position, setPosition] = useState<{ x: number; y: number } | null>(
     null
   )
   const [isMinimizing, setIsMinimizing] = useState(false)
   const [isRestoring, setIsRestoring] = useState(false)
+  const [isMaximized, setIsMaximized] = useState(false)
   const [windowTransform, setWindowTransform] = useState(
     'translate(0px, 0px) scale(1, 1)'
   )
@@ -39,16 +44,26 @@ export function WindowModal({
   const windowRef = useRef<HTMLDivElement>(null)
   const animationTimeoutRef = useRef<number | null>(null)
   const previousMinimizedRef = useRef(isMinimized)
+  const previousNormalPositionRef = useRef<{ x: number; y: number } | null>(null)
+
+  const getCenteredPosition = () => ({
+    x: Math.max(0, (window.innerWidth - WINDOW_WIDTH) / 2),
+    y: Math.max(0, (window.innerHeight - WINDOW_HEIGHT) / 2),
+  })
+
+  const clampPosition = (x: number, y: number) => ({
+    x: Math.min(Math.max(0, x), Math.max(0, window.innerWidth - WINDOW_WIDTH)),
+    y: Math.min(Math.max(0, y), Math.max(0, window.innerHeight - WINDOW_HEIGHT)),
+  })
 
   useEffect(() => {
     if (isOpen && !position) {
-      setPosition({
-        x: Math.max(0, (window.innerWidth - WINDOW_WIDTH) / 2),
-        y: Math.max(0, (window.innerHeight - WINDOW_HEIGHT) / 2),
-      })
+      setPosition(getCenteredPosition())
     }
     if (!isOpen) {
       setPosition(null)
+      setIsMaximized(false)
+      previousNormalPositionRef.current = null
     }
   }, [isOpen, position])
 
@@ -126,7 +141,7 @@ export function WindowModal({
   }, [isMinimized, isOpen, minimizeTargetRect])
 
   const handleTitleBarMouseDown = (e: React.MouseEvent) => {
-    if (isMinimizing || isRestoring) return
+    if (isMinimizing || isRestoring || isMaximized) return
     if (e.button !== 0) return
     e.preventDefault()
     const rect = windowRef.current?.getBoundingClientRect()
@@ -172,6 +187,25 @@ export function WindowModal({
     }, MINIMIZE_ANIMATION_MS)
   }
 
+  const handleToggleMaximize = () => {
+    if (isAnimating) return
+
+    if (!isMaximized) {
+      previousNormalPositionRef.current = position
+      setPosition({ x: 0, y: 0 })
+      setIsMaximized(true)
+      return
+    }
+
+    const previousPosition = previousNormalPositionRef.current
+    if (previousPosition) {
+      setPosition(clampPosition(previousPosition.x, previousPosition.y))
+    } else {
+      setPosition(getCenteredPosition())
+    }
+    setIsMaximized(false)
+  }
+
   const isAnimating = isMinimizing || isRestoring
 
   if (!isOpen) return null
@@ -186,12 +220,17 @@ export function WindowModal({
       ></div>
       <div
         ref={windowRef}
-        className={`absolute bg-[#ECE9D8] text-black w-[800px] h-[600px] rounded-lg shadow-xl ${
+        className={`absolute flex flex-col bg-[#ECE9D8] text-black shadow-xl overflow-hidden ${
           isAnimating ? 'pointer-events-none' : ''
         }`}
         style={{
           left: position?.x ?? 0,
           top: position?.y ?? 0,
+          width: isMaximized ? '100vw' : `${WINDOW_WIDTH}px`,
+          height: isMaximized
+            ? `calc(100vh - ${TASKBAR_HEIGHT}px)`
+            : `${WINDOW_HEIGHT}px`,
+          borderRadius: isMaximized ? 0 : undefined,
           transform: windowTransform,
           transformOrigin: 'top left',
           transition: isAnimating
@@ -202,7 +241,9 @@ export function WindowModal({
       >
         {/* Window Title Bar */}
         <div
-          className="bg-gradient-to-r from-[#0A246A] via-[#3A6EA5] to-[#0A246A] px-2 py-1 flex items-center justify-between rounded-t-lg cursor-grab active:cursor-grabbing select-none"
+          className={`bg-gradient-to-r from-[#0A246A] via-[#3A6EA5] to-[#0A246A] px-2 py-1 flex items-center justify-between cursor-grab active:cursor-grabbing select-none ${
+            isMaximized ? '' : 'rounded-t-lg'
+          }`}
           onMouseDown={handleTitleBarMouseDown}
         >
           <div className="flex items-center gap-2">
@@ -211,49 +252,112 @@ export function WindowModal({
           </div>
           <div className="flex gap-1">
             <button
-              className="text-white hover:bg-[#1f3b69] px-2 rounded"
+              className="w-6 h-5 flex items-center justify-center rounded border border-white/25 bg-white/15 text-white/95 transition-colors hover:bg-white/25 active:bg-white/35"
               onMouseDown={(e) => e.stopPropagation()}
               onClick={handleMinimize}
               title="Minimize"
+              aria-label="Minimize window"
             >
-              -
+              <svg
+                viewBox="0 0 10 10"
+                className="w-3 h-3"
+                fill="none"
+                aria-hidden="true"
+              >
+                <path d="M1 7.5h8" stroke="currentColor" strokeWidth="1.3" />
+              </svg>
             </button>
             <button
-              className="text-white hover:bg-[#1f3b69] px-2 rounded"
+              className="w-6 h-5 flex items-center justify-center rounded border border-white/25 bg-white/15 text-white/95 transition-colors hover:bg-white/25 active:bg-white/35"
               onMouseDown={(e) => e.stopPropagation()}
+              onClick={handleToggleMaximize}
+              title={isMaximized ? 'Restore Down' : 'Maximize'}
+              aria-label={isMaximized ? 'Restore down' : 'Maximize window'}
             >
-              □
+              {isMaximized ? (
+                <svg
+                  viewBox="0 0 10 10"
+                  className="w-3 h-3"
+                  fill="none"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M3.2 2h4.8v4.8H3.2zM2 3.2H6.8V8H2z"
+                    stroke="currentColor"
+                    strokeWidth="1"
+                  />
+                </svg>
+              ) : (
+                <svg
+                  viewBox="0 0 10 10"
+                  className="w-3 h-3"
+                  fill="none"
+                  aria-hidden="true"
+                >
+                  <rect
+                    x="1.8"
+                    y="1.8"
+                    width="6.4"
+                    height="6.4"
+                    stroke="currentColor"
+                    strokeWidth="1.2"
+                  />
+                </svg>
+              )}
             </button>
             <button
               onMouseDown={(e) => e.stopPropagation()}
               onClick={onClose}
-              className="text-white hover:bg-red-600 px-2 rounded"
+              className="w-6 h-5 flex items-center justify-center rounded border border-[#b63f3f] bg-[#d9534f]/85 text-white transition-colors hover:bg-[#e05f5b] active:bg-[#c84c48]"
+              aria-label="Close window"
             >
-              ✕
+              <svg
+                viewBox="0 0 10 10"
+                className="w-3 h-3"
+                fill="none"
+                aria-hidden="true"
+              >
+                <path
+                  d="M2 2l6 6M8 2L2 8"
+                  stroke="currentColor"
+                  strokeWidth="1.3"
+                />
+              </svg>
             </button>
           </div>
         </div>
 
-        {/* Toolbar */}
-        <div className="bg-[#F1EFE2] border-b border-[#919B9C] px-2 py-1">
-          <span className="text-sm">View</span>
-        </div>
-
-        {/* Address Bar */}
-        <div className="bg-[#F1EFE2] px-2 py-1 flex items-center gap-2 border-b border-[#919B9C]">
-          <span className="text-sm">Address</span>
-          <div className="flex-1 bg-white border border-[#919B9C] px-2 py-0.5 text-sm">
-            My Computer/ {title}
-          </div>
-        </div>
+        {showExplorerChrome ? (
+          <>
+            <div className="bg-[#F1EFE2] border-b border-[#919B9C] px-2 py-1">
+              <span className="text-sm">View</span>
+            </div>
+            <div className="bg-[#F1EFE2] px-2 py-1 flex items-center gap-2 border-b border-[#919B9C]">
+              <span className="text-sm">Address</span>
+              <div className="flex-1 bg-white border border-[#919B9C] px-2 py-0.5 text-sm">
+                My Computer/ {title}
+              </div>
+            </div>
+          </>
+        ) : null}
 
         {/* Content */}
-        <div className="p-4 overflow-auto h-[calc(100%-8rem)] bg-white">
+        <div
+          className={
+            showExplorerChrome
+              ? 'flex-1 min-h-0 overflow-auto p-4 bg-white'
+              : 'flex-1 min-h-0 min-w-0 flex flex-col overflow-hidden p-0'
+          }
+        >
           {children}
         </div>
 
         {/* Status Bar */}
-        <div className="absolute bottom-0 left-0 right-0 bg-[#F1EFE2] border-t border-[#919B9C] px-2 py-0.5">
+        <div
+          className={`shrink-0 bg-[#F1EFE2] border-t border-[#919B9C] px-2 py-0.5 ${
+            isMaximized ? '' : 'rounded-b-lg'
+          }`}
+        >
           <span className="text-sm">{itemCount} items</span>
         </div>
       </div>
