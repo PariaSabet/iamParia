@@ -1,9 +1,9 @@
 import { useRef, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { TaskBar } from './TaskBar'
 import { DesktopIcon } from './DesktopIcon'
 import { ProjectsWindow } from './ProjectsWindow'
 import { NotepadWindow } from './NotepadWindow'
+import { AICloneWindow } from './AICloneWindow'
 import folderIcon from '../assets/icons/folder.png'
 import resumeIcon from '../assets/icons/curriculum-vitae.png'
 import githubIcon from '../assets/icons/git.png'
@@ -99,9 +99,10 @@ export function WelcomeScreen() {
   const [isGamesMinimized, setIsGamesMinimized] = useState(false)
   const [isNotepadOpen, setIsNotepadOpen] = useState(false)
   const [isNotepadMinimized, setIsNotepadMinimized] = useState(false)
+  const [isAICloneOpen, setIsAICloneOpen] = useState(false)
+  const [isAICloneMinimized, setIsAICloneMinimized] = useState(false)
   const [isMediaPlayerMinimized, setIsMediaPlayerMinimized] = useState(false)
   const taskbarButtonRefs = useRef<Record<string, HTMLButtonElement | null>>({})
-  const navigate = useNavigate()
 
   const setTaskbarButtonRef =
     (windowId: string) => (el: HTMLButtonElement | null) => {
@@ -123,7 +124,10 @@ export function WelcomeScreen() {
     setIsNotepadOpen(true)
     setIsNotepadMinimized(false)
   }
-  desktopIcons[12].onClick = () => navigate('/ai-clone')
+  desktopIcons[12].onClick = () => {
+    setIsAICloneOpen(true)
+    setIsAICloneMinimized(false)
+  }
 
   return (
     <div
@@ -186,6 +190,18 @@ export function WelcomeScreen() {
                 },
               ]
             : []),
+          ...(isAICloneOpen
+            ? [
+                {
+                  id: 'ai-clone',
+                  title: "Paria's Messenger",
+                  icon: aiCloneIcon,
+                  isMinimized: isAICloneMinimized,
+                  onClick: () => setIsAICloneMinimized((prev) => !prev),
+                  buttonRef: setTaskbarButtonRef('ai-clone'),
+                },
+              ]
+            : []),
           {
             id: 'media-player',
             title: "Paria's Media Player",
@@ -224,6 +240,16 @@ export function WelcomeScreen() {
         onClose={() => {
           setIsNotepadOpen(false)
           setIsNotepadMinimized(false)
+        }}
+      />
+      <AICloneWindow
+        isOpen={isAICloneOpen}
+        isMinimized={isAICloneMinimized}
+        minimizeTargetRect={getMinimizeTargetRect('ai-clone')}
+        onMinimize={() => setIsAICloneMinimized(true)}
+        onClose={() => {
+          setIsAICloneOpen(false)
+          setIsAICloneMinimized(false)
         }}
       />
       <div className="fixed bottom-12 right-4">
