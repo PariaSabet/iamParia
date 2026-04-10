@@ -2,12 +2,16 @@ import { useState, useEffect, useLayoutEffect, useRef } from 'react'
 import { getAccessToken } from '../utils/spotify'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
+  faBackward,
+  faForward,
+  faList,
   faMusic,
   faPause,
   faPlay,
   faStop,
   faStepBackward,
   faStepForward,
+  faVolumeHigh,
 } from '@fortawesome/free-solid-svg-icons'
 
 export interface SpotifyTrack {
@@ -62,9 +66,7 @@ function buildStreamingLinks(track: {
     {
       id: 'spotify',
       label: 'Spotify',
-      url:
-        track.spotifyUrl ||
-        `https://open.spotify.com/search/${term}`,
+      url: track.spotifyUrl || `https://open.spotify.com/search/${term}`,
     },
     {
       id: 'apple_music',
@@ -126,6 +128,70 @@ function rememberPreferredStreaming(id: StreamingServiceId) {
   } catch {
     /* ignore quota / private mode */
   }
+}
+
+/** Classic WMP (XP)–style flat toolbar controls */
+const wmpTransportBtn =
+  'inline-flex h-[26px] w-[26px] shrink-0 items-center justify-center border-0 bg-transparent p-0 text-[#2a2a2a] transition-colors hover:bg-black/[0.07] active:bg-black/[0.11] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#316ac5] disabled:pointer-events-none disabled:opacity-[0.38]'
+
+const wmpTransportBtnPrimary =
+  'inline-flex h-[28px] w-[28px] shrink-0 items-center justify-center border-0 bg-transparent p-0 text-[#2a2a2a] transition-colors hover:bg-black/[0.07] active:bg-black/[0.11] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#316ac5]'
+
+function WmpEtchedSeparator() {
+  return (
+    <span
+      className="mx-0.5 inline-block h-[18px] w-px shrink-0 self-center bg-[#808080] shadow-[1px_0_0_rgba(255,255,255,0.9)]"
+      aria-hidden={true}
+    />
+  )
+}
+
+/** Wedge volume: gray groove and blue fill share one hypotenuse (no slope mismatch). */
+function WmpVolumeWedge({
+  level = 0.7,
+  className = '',
+}: {
+  level?: number
+  className?: string
+}) {
+  const topRightYPct = 12
+  const splitXPct = Math.min(100, Math.max(0, level * 100))
+  const yOnHypPct =
+    100 + (topRightYPct - 100) * (splitXPct / 100)
+
+  return (
+    <div
+      className={`relative h-[18px] w-[46px] ${className}`}
+      title="Volume in Spotify"
+      role="presentation"
+    >
+      {/* Full wedge groove (gray) */}
+      <div
+        className="absolute inset-0 border border-[#7d7b71] shadow-[inset_1px_1px_3px_rgba(0,0,0,0.35)]"
+        style={{
+          clipPath: `polygon(0% 100%, 100% ${topRightYPct}%, 100% 100%)`,
+          background:
+            'linear-gradient(to bottom, #d2cdc0 0%, #9a9588 100%)',
+        }}
+      />
+      {/* Filled portion: same slanted top edge, cut at thumb x */}
+      <div
+        className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[#a8ccf0] to-[#2458a0]"
+        style={{
+          clipPath: `polygon(0% 100%, ${splitXPct}% ${yOnHypPct}%, ${splitXPct}% 100%)`,
+        }}
+      />
+      <div
+        className="absolute bottom-px z-[1] w-[4px] rounded-[1px] border border-[#4a4a4a] bg-gradient-to-b from-[#f5f5f5] to-[#9a9a9a] shadow-[inset_0_1px_0_rgba(255,255,255,0.75)]"
+        style={{
+          left: `${splitXPct}%`,
+          top: `calc(${yOnHypPct}% - 1px)`,
+          bottom: '1px',
+          transform: 'translateX(-50%)',
+        }}
+      />
+    </div>
+  )
 }
 
 export function SpotifyNowPlaying({
@@ -381,12 +447,6 @@ export function SpotifyNowPlaying({
     el.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
   }, [helpNoteVisible])
 
-  const transportSecondaryClass =
-    'inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-sm border border-neutral-500/70 bg-gradient-to-b from-[#fdfcf7] to-[#dad7cb] text-neutral-900 shadow-[inset_0_1px_0_rgba(255,255,255,0.75)] transition hover:brightness-[1.04] active:shadow-[inset_0_1px_3px_rgba(0,0,0,0.18)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2b579a] focus-visible:ring-offset-1 focus-visible:ring-offset-[#F1EFE2] disabled:pointer-events-none disabled:opacity-40'
-
-  const transportPrimaryClass =
-    'inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-sm border border-neutral-600/80 bg-gradient-to-b from-white to-[#d2cfc3] text-neutral-900 shadow-[inset_0_1px_0_rgba(255,255,255,0.9)] transition hover:brightness-[1.05] active:shadow-[inset_0_1px_3px_rgba(0,0,0,0.2)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2b579a] focus-visible:ring-offset-1 focus-visible:ring-offset-[#F1EFE2]'
-
   // If data not loaded, show loading
   if (!trackData) {
     return (
@@ -461,7 +521,9 @@ export function SpotifyNowPlaying({
           <button
             type="button"
             className="w-6 h-5 flex items-center justify-center rounded border border-white/25 bg-white/15 text-white/95 transition-colors hover:bg-white/25 active:bg-white/35"
-            aria-label={minimized ? 'Restore media player' : 'Maximize media player'}
+            aria-label={
+              minimized ? 'Restore media player' : 'Maximize media player'
+            }
             onClick={handleRestore}
           >
             {minimized ? (
@@ -611,82 +673,123 @@ export function SpotifyNowPlaying({
             )}
           </div>
 
-          {/* Playback Controls */}
-          <div className="p-2 flex items-center gap-1.5 bg-[#F1EFE2] text-neutral-900">
-            <button
-              type="button"
-              className={transportPrimaryClass}
-              aria-label={
-                preferredStreamingLabel
-                  ? trackData.isPlaying
-                    ? `Open in ${preferredStreamingLabel} (currently playing)`
-                    : `Open in ${preferredStreamingLabel}`
-                  : trackData.isPlaying
-                    ? 'Open in Spotify (currently playing)'
-                    : 'Open in Spotify'
-              }
-              title={
-                preferredStreamingLabel
-                  ? `Opens in ${preferredStreamingLabel}. Change from the Play menu.`
-                  : 'Opens in Spotify. Choose another app from the Play menu.'
-              }
-              onClick={openTrackOnPreferredService}
-            >
-              <FontAwesomeIcon
-                icon={trackData.isPlaying ? faPause : faPlay}
-                className="h-4 w-4"
-              />
-            </button>
-            <button
-              type="button"
-              className={transportSecondaryClass}
-              aria-label="Previous track (use Spotify app)"
-              title="Use the Spotify app to change tracks"
-              disabled
-            >
-              <FontAwesomeIcon icon={faStepBackward} className="h-3 w-3" />
-            </button>
-            <button
-              type="button"
-              className={transportSecondaryClass}
-              aria-label="Next track (use Spotify app)"
-              title="Use the Spotify app to change tracks"
-              disabled
-            >
-              <FontAwesomeIcon icon={faStepForward} className="h-3 w-3" />
-            </button>
-            <button
-              type="button"
-              className={transportSecondaryClass}
-              aria-label="Stop (use Spotify app)"
-              title="Use the Spotify app to stop playback"
-              disabled
-            >
-              <FontAwesomeIcon icon={faStop} className="h-3 w-3" />
-            </button>
-
-            <div
-              className="flex-1 mx-1.5 h-2.5 min-w-0 rounded-full border border-neutral-500/55 bg-[#b8b4a8]/35 shadow-[inset_0_1px_2px_rgba(0,0,0,0.15)] overflow-hidden"
-              title="Position updates in Spotify"
-              role="presentation"
-            >
-              <div
-                className="h-full rounded-full bg-gradient-to-b from-[#7eb3eb] to-[#2b579a] shadow-[inset_0_1px_0_rgba(255,255,255,0.35)] transition-[width] duration-700 ease-out"
-                style={{
-                  width: trackData.isPlaying ? '40%' : '12%',
-                }}
-              />
+          {/* Playback bar — Windows Media Player (XP) style */}
+          <div className="border-t border-[#808080] bg-[#ece9d8] font-['Tahoma','Segoe_UI',system-ui,sans-serif] shadow-[inset_0_1px_0_rgba(255,255,255,0.8)]">
+            {/* Seek / progress row (full width, above buttons) */}
+            <div className="px-2 pb-1 pt-1.5">
+              <div className="relative h-[15px] w-full">
+                <div className="absolute inset-x-0 top-1/2 h-[8px] -translate-y-1/2 rounded-[1px] border border-[#7d7b71] bg-gradient-to-b from-[#b5b1a5] to-[#d8d4ca] shadow-[inset_1px_1px_3px_rgba(0,0,0,0.28),inset_-1px_-1px_1px_rgba(255,255,255,0.35)]">
+                  <div
+                    className="absolute left-0 top-0 h-full rounded-[1px] bg-gradient-to-b from-[#b8d4f6] via-[#5b8fd4] to-[#214a8f] shadow-[inset_0_1px_0_rgba(255,255,255,0.45)] transition-[width] duration-700 ease-out"
+                    style={{
+                      width: `${trackData.isPlaying ? 40 : 12}%`,
+                    }}
+                  />
+                  <div
+                    className="absolute top-1/2 z-[1] h-[12px] w-[7px] -translate-x-1/2 -translate-y-1/2 rounded-[1px] border border-[#5f5f5f] bg-gradient-to-b from-white via-[#e8e8e8] to-[#a8a8a8] shadow-[inset_0_1px_0_rgba(255,255,255,0.9),0_0_0_1px_rgba(0,0,0,0.08)]"
+                    style={{
+                      left: `${trackData.isPlaying ? 40 : 12}%`,
+                    }}
+                  />
+                </div>
+              </div>
             </div>
 
-            <div
-              className="w-[4.25rem] shrink-0 h-2.5 rounded-full border border-neutral-500/55 bg-[#b8b4a8]/35 shadow-[inset_0_1px_2px_rgba(0,0,0,0.15)] overflow-hidden"
-              title="Volume in Spotify"
-              role="presentation"
-            >
-              <div
-                className="h-full rounded-full bg-gradient-to-b from-[#9a9a9a] to-[#4a4a4a] shadow-[inset_0_1px_0_rgba(255,255,255,0.25)]"
-                style={{ width: '68%' }}
-              />
+            {/* Transport + volume row */}
+            <div className="flex items-center px-1 pb-1.5 pt-0.5">
+              <button
+                type="button"
+                className={wmpTransportBtnPrimary}
+                aria-label={
+                  preferredStreamingLabel
+                    ? trackData.isPlaying
+                      ? `Open in ${preferredStreamingLabel} (currently playing)`
+                      : `Open in ${preferredStreamingLabel}`
+                    : trackData.isPlaying
+                      ? 'Open in Spotify (currently playing)'
+                      : 'Open in Spotify'
+                }
+                title={
+                  preferredStreamingLabel
+                    ? `Opens in ${preferredStreamingLabel}. Change from the Play menu.`
+                    : 'Opens in Spotify. Choose another app from the Play menu.'
+                }
+                onClick={openTrackOnPreferredService}
+              >
+                <FontAwesomeIcon
+                  icon={trackData.isPlaying ? faPause : faPlay}
+                  className="h-[14px] w-[14px]"
+                />
+              </button>
+              <button
+                type="button"
+                className={wmpTransportBtn}
+                aria-label="Stop (use Spotify app)"
+                title="Use the Spotify app to stop playback"
+                disabled
+              >
+                <FontAwesomeIcon icon={faStop} className="h-3 w-3" />
+              </button>
+              <WmpEtchedSeparator />
+              <button
+                type="button"
+                className={wmpTransportBtn}
+                aria-label="Previous track (use Spotify app)"
+                title="Use the Spotify app to change tracks"
+                disabled
+              >
+                <FontAwesomeIcon icon={faStepBackward} className="h-3 w-3" />
+              </button>
+              <button
+                type="button"
+                className={wmpTransportBtn}
+                aria-label="Rewind (use Spotify app)"
+                title="Use the Spotify app"
+                disabled
+              >
+                <FontAwesomeIcon icon={faBackward} className="h-3 w-3" />
+              </button>
+              <button
+                type="button"
+                className={wmpTransportBtn}
+                aria-label="Fast forward (use Spotify app)"
+                title="Use the Spotify app"
+                disabled
+              >
+                <FontAwesomeIcon icon={faForward} className="h-3 w-3" />
+              </button>
+              <button
+                type="button"
+                className={wmpTransportBtn}
+                aria-label="Next track (use Spotify app)"
+                title="Use the Spotify app to change tracks"
+                disabled
+              >
+                <FontAwesomeIcon icon={faStepForward} className="h-3 w-3" />
+              </button>
+              <WmpEtchedSeparator />
+              <button
+                type="button"
+                className={wmpTransportBtn}
+                aria-label="Now playing list (not available)"
+                title="Decorative control"
+                disabled
+              >
+                <FontAwesomeIcon icon={faList} className="h-3 w-3" />
+              </button>
+              <WmpEtchedSeparator />
+              <div className="ml-auto flex shrink-0 items-center gap-0.5 pl-1">
+                <span
+                  className="flex h-[26px] w-[22px] items-center justify-center text-[#2a2a2a]"
+                  aria-hidden={true}
+                >
+                  <FontAwesomeIcon
+                    icon={faVolumeHigh}
+                    className="h-3 w-3"
+                  />
+                </span>
+                <WmpVolumeWedge level={0.7} />
+              </div>
             </div>
           </div>
 
