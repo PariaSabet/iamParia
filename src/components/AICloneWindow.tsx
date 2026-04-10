@@ -16,8 +16,115 @@ interface AICloneWindowProps {
   minimizeTargetRect?: DOMRect | null
 }
 
+const WELCOME_MESSAGE =
+  "Hey! I'm Paria's AI clone. Ask me anything about her projects, skills, or interests!"
+
+const SUGGESTION_CHIPS = [
+  'What projects have you worked on?',
+  'Tell me about yourself',
+  "What's your tech stack?",
+  'What are your hobbies?',
+]
+
 function formatTime(date: Date) {
   return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+}
+
+function AiAvatar({ size = 'sm' }: { size?: 'sm' | 'md' }) {
+  const dim = size === 'md' ? 'w-8 h-8' : 'w-6 h-6'
+  const iconDim = size === 'md' ? 'w-5 h-5' : 'w-3.5 h-3.5'
+  return (
+    <div
+      className={`${dim} rounded-full bg-gradient-to-br from-[#4A90D9] to-[#1B3E8F] flex items-center justify-center shrink-0 shadow-sm`}
+    >
+      <svg
+        viewBox="0 0 24 24"
+        className={`${iconDim} text-white`}
+        fill="currentColor"
+      >
+        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+      </svg>
+    </div>
+  )
+}
+
+function TypingIndicator() {
+  return (
+    <div className="flex items-end gap-2 mt-3">
+      <AiAvatar />
+      <div className="bg-[#D6E6F6] border border-[#B7CBE4] rounded-xl rounded-bl-sm px-3 py-2 shadow-sm">
+        <div className="flex gap-1 items-center h-5">
+          {[0, 1, 2].map((i) => (
+            <span
+              key={i}
+              className="w-1.5 h-1.5 rounded-full bg-[#5A7FA8]"
+              style={{
+                animation: 'typingBounce 1.2s ease-in-out infinite',
+                animationDelay: `${i * 0.15}s`,
+              }}
+            />
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function MsnToolbar() {
+  const buttons = [
+    {
+      label: 'Font',
+      icon: (
+        <svg viewBox="0 0 16 16" className="w-3.5 h-3.5" fill="currentColor">
+          <path d="M2 13h2l1.5-4h5L12 13h2L9.5 3h-3L2 13zm4.5-6L8 3.5 9.5 7h-3z" />
+        </svg>
+      ),
+    },
+    {
+      label: 'Emoticons',
+      icon: (
+        <svg viewBox="0 0 16 16" className="w-3.5 h-3.5" fill="currentColor">
+          <path d="M8 1a7 7 0 100 14A7 7 0 008 1zm0 12.5A5.5 5.5 0 1113.5 8 5.51 5.51 0 018 13.5zM6.25 6.5a1 1 0 11-2 0 1 1 0 012 0zm5.5 0a1 1 0 11-2 0 1 1 0 012 0zM8 11.5c-1.84 0-3.15-1.1-3.36-2.5h6.72c-.21 1.4-1.52 2.5-3.36 2.5z" />
+        </svg>
+      ),
+    },
+    {
+      label: 'Nudge',
+      icon: (
+        <svg
+          viewBox="0 0 16 16"
+          className="w-3.5 h-3.5"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.3"
+        >
+          <path d="M3 8h2l1.5-3 2 6 1.5-3H13" />
+        </svg>
+      ),
+    },
+    {
+      label: 'Webcam',
+      icon: (
+        <svg viewBox="0 0 16 16" className="w-3.5 h-3.5" fill="currentColor">
+          <path d="M2 4a1 1 0 00-1 1v6a1 1 0 001 1h8a1 1 0 001-1V9.5l3 2V4.5l-3 2V5a1 1 0 00-1-1H2z" />
+        </svg>
+      ),
+    },
+  ]
+
+  return (
+    <div className="shrink-0 bg-[#F1EFE2] border-t border-[#ACA899] border-b border-b-[#D4D0C8] px-2 py-0.5 flex items-center gap-0.5">
+      {buttons.map((btn) => (
+        <button
+          key={btn.label}
+          title={btn.label}
+          className="flex items-center justify-center w-7 h-6 text-[#555] rounded-sm border border-transparent hover:border-[#C0C0C0] hover:bg-gradient-to-b hover:from-[#FAFAFA] hover:to-[#E8E8E8] active:bg-[#D8D8D8] active:border-[#999] transition-colors"
+        >
+          {btn.icon}
+        </button>
+      ))}
+    </div>
+  )
 }
 
 function SignInScreen({
@@ -45,7 +152,6 @@ function SignInScreen({
 
   return (
     <div className="flex flex-col h-full bg-gradient-to-b from-[#D3E5FA] to-[#B9D1EA]">
-      {/* MSN-style header banner */}
       <div className="bg-gradient-to-r from-[#1B3E8F] via-[#2D62B3] to-[#4A90D9] px-6 py-4 text-center">
         <div className="flex items-center justify-center gap-2 mb-1">
           <svg
@@ -62,10 +168,8 @@ function SignInScreen({
         <p className="text-blue-100 text-xs">Sign in to chat with AI Paria</p>
       </div>
 
-      {/* Sign-in form */}
       <div className="flex-1 flex items-center justify-center p-6">
         <div className="bg-white rounded-lg shadow-md border border-[#A0B8D0] w-full max-w-xs p-5">
-          {/* Avatar area */}
           <div className="flex flex-col items-center mb-4">
             <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#4A90D9] to-[#1B3E8F] flex items-center justify-center mb-2 shadow-md">
               <svg
@@ -82,7 +186,6 @@ function SignInScreen({
             <span className="text-xs text-[#666]">Online</span>
           </div>
 
-          {/* Passcode field */}
           <label className="block text-xs text-[#333] mb-1 font-semibold">
             Passcode:
           </label>
@@ -102,7 +205,6 @@ function SignInScreen({
             placeholder="Enter passcode"
           />
 
-          {/* Error message */}
           {error && (
             <div className="mt-2 bg-[#FFF4CE] border border-[#E5C100] rounded px-2 py-1.5 flex items-start gap-1.5">
               <svg
@@ -116,7 +218,6 @@ function SignInScreen({
             </div>
           )}
 
-          {/* Sign In button */}
           <button
             onClick={handleSubmit}
             className="mt-4 w-full py-1.5 text-sm font-semibold text-[#333] bg-gradient-to-b from-[#F5F5F5] to-[#DCDCDC] border border-[#999] rounded-sm shadow-sm hover:from-[#E8E8E8] hover:to-[#D0D0D0] active:from-[#D0D0D0] active:to-[#C0C0C0] active:shadow-inner"
@@ -129,10 +230,17 @@ function SignInScreen({
   )
 }
 
-function MessengerChat() {
-  const [messages, setMessages] = useState<Message[]>([])
+function MessengerChat({
+  onMessageCountChange,
+}: {
+  onMessageCountChange: (count: number) => void
+}) {
+  const [messages, setMessages] = useState<Message[]>([
+    { sender: 'ai', text: WELCOME_MESSAGE, timestamp: new Date() },
+  ])
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
+  const [showChips, setShowChips] = useState(true)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
@@ -140,9 +248,15 @@ function MessengerChat() {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages, loading])
 
-  const handleSend = async () => {
-    const trimmed = input.trim()
+  useEffect(() => {
+    onMessageCountChange(messages.length)
+  }, [messages.length, onMessageCountChange])
+
+  const sendMessage = async (text: string) => {
+    const trimmed = text.trim()
     if (!trimmed || loading) return
+
+    setShowChips(false)
 
     const userMsg: Message = {
       sender: 'user',
@@ -158,12 +272,17 @@ function MessengerChat() {
     }
 
     try {
+      const history = [...messages, userMsg].map((m) => ({
+        role: m.sender === 'user' ? 'user' : 'assistant',
+        content: m.text,
+      }))
+
       const response = await fetch(
         'https://aicloneofparia.netlify.app/.netlify/functions/api',
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ prompt: trimmed }),
+          body: JSON.stringify({ prompt: trimmed, history }),
         }
       )
 
@@ -192,6 +311,8 @@ function MessengerChat() {
     }
   }
 
+  const handleSend = () => sendMessage(input)
+
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault()
@@ -210,15 +331,7 @@ function MessengerChat() {
     <div className="flex flex-col h-full bg-[#ECE9D8]">
       {/* Contact bar */}
       <div className="shrink-0 bg-gradient-to-r from-[#D6E6F6] to-[#B7D3EE] border-b border-[#8CADD6] px-3 py-1.5 flex items-center gap-2">
-        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#4A90D9] to-[#1B3E8F] flex items-center justify-center shadow-sm">
-          <svg
-            viewBox="0 0 24 24"
-            className="w-5 h-5 text-white"
-            fill="currentColor"
-          >
-            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
-          </svg>
-        </div>
+        <AiAvatar size="md" />
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1.5">
             <span className="text-sm font-semibold text-[#1B3E8F] truncate">
@@ -232,56 +345,73 @@ function MessengerChat() {
 
       {/* Chat history */}
       <div className="flex-1 min-h-0 overflow-y-auto bg-white border-x border-[#ACA899]">
-        <div className="p-3 space-y-1">
-          {messages.length === 0 && !loading && (
-            <div className="text-center text-xs text-[#999] py-8">
-              <p className="mb-1">You have started a conversation with</p>
-              <p className="font-semibold text-[#555]">Paria (AI Clone)</p>
-            </div>
-          )}
-
+        <div className="p-3 space-y-0.5">
           {messages.map((msg, i) => {
             const isUser = msg.sender === 'user'
-            const showHeader =
-              i === 0 || messages[i - 1].sender !== msg.sender
+            const isLastInGroup =
+              i === messages.length - 1 || messages[i + 1].sender !== msg.sender
 
             return (
               <div key={i}>
-                {showHeader && (
-                  <div className="flex items-baseline gap-2 mt-2 first:mt-0">
-                    <span
-                      className={`text-xs font-bold ${
-                        isUser ? 'text-[#0066CC]' : 'text-[#CC3300]'
-                      }`}
-                    >
-                      {isUser ? 'You' : 'Paria'} says:
-                    </span>
-                    <span className="text-[10px] text-[#999]">
-                      ({formatTime(msg.timestamp)})
-                    </span>
+                {isUser ? (
+                  <div className="flex justify-end mt-2">
+                    <div className="max-w-[80%]">
+                      <div className="bg-[#DCF8C6] border border-[#C5E1A5] rounded-xl rounded-br-sm px-3 py-2 shadow-sm">
+                        <p className="text-sm text-[#333] whitespace-pre-wrap break-words leading-relaxed">
+                          {msg.text}
+                        </p>
+                      </div>
+                      {isLastInGroup && (
+                        <p className="text-[10px] text-[#999] mt-0.5 text-right pr-1">
+                          {formatTime(msg.timestamp)}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex items-end gap-2 mt-2">
+                    <AiAvatar />
+                    <div className="max-w-[80%]">
+                      <div className="bg-[#D6E6F6] border border-[#B7CBE4] rounded-xl rounded-bl-sm px-3 py-2 shadow-sm">
+                        <p className="text-sm text-[#333] whitespace-pre-wrap break-words leading-relaxed">
+                          {msg.text}
+                        </p>
+                      </div>
+                      {isLastInGroup && (
+                        <p className="text-[10px] text-[#999] mt-0.5 pl-1">
+                          {formatTime(msg.timestamp)}
+                        </p>
+                      )}
+                    </div>
                   </div>
                 )}
-                <div className="pl-3 text-sm text-[#333] whitespace-pre-wrap break-words leading-relaxed">
-                  {msg.text}
-                </div>
               </div>
             )
           })}
 
-          {loading && (
-            <div className="flex items-baseline gap-2 mt-2">
-              <span className="text-xs font-bold text-[#CC3300]">
-                Paria
-              </span>
-              <span className="text-xs text-[#999] italic animate-pulse">
-                is typing...
-              </span>
+          {/* Suggestion chips */}
+          {showChips && !loading && (
+            <div className="flex flex-wrap gap-1.5 mt-3 pl-8">
+              {SUGGESTION_CHIPS.map((chip) => (
+                <button
+                  key={chip}
+                  onClick={() => sendMessage(chip)}
+                  className="px-3 py-1.5 text-xs font-medium text-[#1B3E8F] bg-[#EAF1FA] border border-[#B7CBE4] rounded-full shadow-sm hover:bg-[#D6E6F6] hover:border-[#8CADD6] active:bg-[#C4D9F0] transition-colors"
+                >
+                  {chip}
+                </button>
+              ))}
             </div>
           )}
+
+          {loading && <TypingIndicator />}
 
           <div ref={messagesEndRef} />
         </div>
       </div>
+
+      {/* MSN-style toolbar */}
+      <MsnToolbar />
 
       {/* Input area */}
       <div className="shrink-0 bg-[#ECE9D8] border-t border-[#ACA899] p-2">
@@ -321,6 +451,13 @@ export function AICloneWindow({
   minimizeTargetRect = null,
 }: AICloneWindowProps) {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [messageCount, setMessageCount] = useState(0)
+
+  const statusText = isAuthenticated
+    ? messageCount === 1
+      ? '1 message'
+      : `${messageCount} messages`
+    : 'Not signed in'
 
   return (
     <WindowModal
@@ -331,12 +468,12 @@ export function AICloneWindow({
       minimizeTargetRect={minimizeTargetRect}
       title="Paria's Messenger"
       icon={aiCloneIcon}
-      itemCount={0}
+      statusText={statusText}
       showExplorerChrome={false}
     >
       <div className="flex flex-col h-full min-h-0">
         {isAuthenticated ? (
-          <MessengerChat />
+          <MessengerChat onMessageCountChange={setMessageCount} />
         ) : (
           <SignInScreen onAuthenticated={() => setIsAuthenticated(true)} />
         )}

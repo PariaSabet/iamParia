@@ -11,6 +11,8 @@ interface WindowModalProps {
   icon?: string
   children: React.ReactNode
   itemCount?: number
+  /** Custom status bar text. When provided, overrides the default "{itemCount} items" display. */
+  statusText?: string
   /** Explorer-style View + Address rows (My Computer path). Off for app windows like Notepad. */
   showExplorerChrome?: boolean
 }
@@ -25,6 +27,7 @@ export function WindowModal({
   icon = folderIcon,
   children,
   itemCount,
+  statusText,
   showExplorerChrome = true,
 }: WindowModalProps) {
   const WINDOW_WIDTH = 800
@@ -358,7 +361,9 @@ export function WindowModal({
             isMaximized ? '' : 'rounded-b-lg'
           }`}
         >
-          <span className="text-sm">{itemCount} items</span>
+          <span className="text-sm">
+            {statusText ?? `${itemCount} items`}
+          </span>
         </div>
       </div>
     </div>
