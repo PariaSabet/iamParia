@@ -21,7 +21,7 @@ import gameIcon from '../assets/icons/folder-games.png'
 import { GamesWindow } from './GamesWindow'
 import notepadIcon from '../assets/icons/notepad.png'
 import aiCloneIcon from '../assets/icons/ai.png'
-import spotifyIcon from '../assets/icons/spotify.png'
+import mediaPlayerTaskbarIcon from '../assets/icons/media-player-note.svg'
 
 const desktopIcons = [
   {
@@ -189,7 +189,7 @@ export function WelcomeScreen() {
           {
             id: 'media-player',
             title: "Paria's Media Player",
-            icon: spotifyIcon,
+            icon: mediaPlayerTaskbarIcon,
             isMinimized: isMediaPlayerMinimized,
             onClick: () => setIsMediaPlayerMinimized((prev) => !prev),
             buttonRef: setTaskbarButtonRef('media-player'),
