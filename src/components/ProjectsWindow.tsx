@@ -1,4 +1,4 @@
-import { WindowModal } from './WindowModal'
+import { WindowModal, type SidebarLink } from './WindowModal'
 import folderIcon from '../assets/icons/folder.png'
 import randomMealGeneratorIcon from '../assets/icons/planning.png'
 import cssArtsIcon from '../assets/icons/css-file.png'
@@ -21,6 +21,7 @@ interface ProjectsWindowProps {
   onMinimize?: () => void
   isMinimized?: boolean
   minimizeTargetRect?: DOMRect | null
+  sidebarLinks?: SidebarLink[]
 }
 
 export function ProjectsWindow({
@@ -29,6 +30,7 @@ export function ProjectsWindow({
   onMinimize,
   isMinimized = false,
   minimizeTargetRect = null,
+  sidebarLinks,
 }: ProjectsWindowProps) {
   const projects: Project[] = [
     {
@@ -83,6 +85,7 @@ export function ProjectsWindow({
       title="My Projects"
       icon={folderIcon}
       itemCount={projects.length}
+      sidebarLinks={sidebarLinks}
     >
       <div className="grid grid-cols-[repeat(auto-fill,minmax(120px,1fr))] gap-4">
         {projects.map((project, index) => (

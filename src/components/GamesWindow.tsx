@@ -1,4 +1,4 @@
-import { WindowModal } from './WindowModal'
+import { WindowModal, type SidebarLink } from './WindowModal'
 import folderIcon from '../assets/icons/folder.png'
 import ticTacToeIcon from '../assets/icons/tic-tac-toe.png'
 import impossibleGameIcon from '../assets/icons/game.png'
@@ -18,6 +18,7 @@ interface GamesWindowProps {
   onMinimize?: () => void
   isMinimized?: boolean
   minimizeTargetRect?: DOMRect | null
+  sidebarLinks?: SidebarLink[]
 }
 
 export function GamesWindow({
@@ -26,6 +27,7 @@ export function GamesWindow({
   onMinimize,
   isMinimized = false,
   minimizeTargetRect = null,
+  sidebarLinks,
 }: GamesWindowProps) {
   const games: Game[] = [
     {
@@ -54,6 +56,7 @@ export function GamesWindow({
       title="Games"
       icon={folderIcon}
       itemCount={games.length}
+      sidebarLinks={sidebarLinks}
     >
       <div className="grid grid-cols-[repeat(auto-fill,minmax(120px,1fr))] gap-4">
         {games.map((game, index) => (

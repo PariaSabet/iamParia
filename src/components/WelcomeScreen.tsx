@@ -221,6 +221,28 @@ export function WelcomeScreen() {
           setIsProjectsOpen(false)
           setIsProjectsMinimized(false)
         }}
+        sidebarLinks={[
+          {
+            icon: gameIcon,
+            label: 'Games',
+            onClick: () => {
+              setIsGamesOpen(true)
+              setIsGamesMinimized(false)
+            },
+          },
+          {
+            icon: notepadIcon,
+            label: 'About Me',
+            onClick: () => {
+              setIsNotepadOpen(true)
+              setIsNotepadMinimized(false)
+            },
+          },
+          {
+            icon: folderIcon,
+            label: 'My Computer',
+          },
+        ]}
       />
       <GamesWindow
         isOpen={isGamesOpen}
@@ -231,6 +253,28 @@ export function WelcomeScreen() {
           setIsGamesOpen(false)
           setIsGamesMinimized(false)
         }}
+        sidebarLinks={[
+          {
+            icon: folderIcon,
+            label: 'My Projects',
+            onClick: () => {
+              setIsProjectsOpen(true)
+              setIsProjectsMinimized(false)
+            },
+          },
+          {
+            icon: notepadIcon,
+            label: 'About Me',
+            onClick: () => {
+              setIsNotepadOpen(true)
+              setIsNotepadMinimized(false)
+            },
+          },
+          {
+            icon: folderIcon,
+            label: 'My Computer',
+          },
+        ]}
       />
       <NotepadWindow
         isOpen={isNotepadOpen}
