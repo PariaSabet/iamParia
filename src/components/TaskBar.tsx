@@ -14,9 +14,15 @@ interface TaskBarWindowItem {
 
 interface TaskBarProps {
   windows?: TaskBarWindowItem[]
+  onOpenProjects: () => void
+  onOpenGames: () => void
+  onOpenNotepad: () => void
+  onOpenAIClone: () => void
+  onLogOff: () => void
+  onShutDown: () => void
 }
 
-export function TaskBar({ windows = [] }: TaskBarProps) {
+export function TaskBar({ windows = [], onOpenProjects, onOpenGames, onOpenNotepad, onOpenAIClone, onLogOff, onShutDown }: TaskBarProps) {
   const [currentTime, setCurrentTime] = useState('')
   const [isStartMenuOpen, setIsStartMenuOpen] = useState(false)
 
@@ -91,6 +97,12 @@ export function TaskBar({ windows = [] }: TaskBarProps) {
       <StartMenu
         isOpen={isStartMenuOpen}
         onClose={() => setIsStartMenuOpen(false)}
+        onOpenProjects={onOpenProjects}
+        onOpenGames={onOpenGames}
+        onOpenNotepad={onOpenNotepad}
+        onOpenAIClone={onOpenAIClone}
+        onLogOff={onLogOff}
+        onShutDown={onShutDown}
         className="w-full md:w-auto"
       />
     </>

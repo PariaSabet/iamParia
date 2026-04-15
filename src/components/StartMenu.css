@@ -1,32 +1,116 @@
-/* .start-menu-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 998;
-} */
-
 .start-menu {
   position: fixed;
   bottom: 40px;
   left: 0;
   width: 380px;
-  height: 480px;
   display: flex;
   z-index: 999;
-  box-shadow: 2px -2px 5px rgba(0, 0, 0, 0.2);
+  box-shadow: 2px -2px 8px rgba(0, 0, 0, 0.3);
+  border: 2px solid #0A246A;
+  border-radius: 8px 8px 0 0;
 }
 
 .start-menu-left {
-  width: 60%;
-  padding: 6px;
+  width: 55%;
+  padding: 4px 0;
   background: #fff;
-  border-right: 1px solid #ccc;
+  border-right: 1px solid #d6dde8;
 }
 
 .start-menu-right {
-  width: 40%;
-  padding: 6px;
-  background: #e3efff;
+  width: 45%;
+  padding: 4px 0;
+  background: linear-gradient(to bottom, #d3e5fa, #e8f0fb);
+}
+
+.start-menu-item {
+  display: flex;
+  align-items: center;
+  padding: 5px 8px;
+  cursor: pointer;
+  border-radius: 3px;
+  text-decoration: none;
+  color: inherit;
+  border: none;
+  background: none;
+  text-align: left;
+  font-family: inherit;
+  font-size: inherit;
+  margin: 0 4px;
+  transition: background 0.05s;
+}
+
+.start-menu-item:hover {
+  background: #316ac5;
+  color: #fff;
+}
+
+.start-menu-item:hover .text-gray-500 {
+  color: #c8d8f0;
+}
+
+.start-menu-pinned-item {
+  padding: 6px 8px;
+}
+
+.start-menu-separator {
+  height: 1px;
+  background: #c0c0c0;
+  margin: 4px 8px;
+}
+
+.start-menu-all-programs {
+  border-top: 1px solid #c0c0c0;
+  padding: 6px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  cursor: default;
+  background: #fff;
+  margin-top: auto;
+}
+
+.start-menu-all-programs:hover {
+  background: #316ac5;
+  color: #fff;
+  cursor: pointer;
+}
+
+.start-menu-all-programs:hover svg polygon {
+  fill: #fff;
+}
+
+.start-menu-shutdown {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 8px;
+  background: linear-gradient(to bottom, #4a8bc2, #3a78b0);
+  border-top: 1px solid #2a5a8a;
+}
+
+.start-menu-shutdown-btn {
+  display: flex;
+  align-items: center;
+  padding: 3px 10px;
+  border: none;
+  background: none;
+  color: #fff;
+  font-size: 12px;
+  cursor: pointer;
+  border-radius: 3px;
+  font-family: inherit;
+  transition: background 0.1s;
+}
+
+.start-menu-shutdown-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.start-menu-shutdown-btn-off {
+  color: #fff;
+}
+
+.start-menu-right .start-menu-item:hover span {
+  color: #fff;
 }

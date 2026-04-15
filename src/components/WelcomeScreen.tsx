@@ -92,7 +92,12 @@ const desktopIcons = [
   },
 ]
 
-export function WelcomeScreen() {
+interface WelcomeScreenProps {
+  onLogOff: () => void
+  onShutDown: () => void
+}
+
+export function WelcomeScreen({ onLogOff, onShutDown }: WelcomeScreenProps) {
   const [isProjectsOpen, setIsProjectsOpen] = useState(false)
   const [isProjectsMinimized, setIsProjectsMinimized] = useState(false)
   const [isGamesOpen, setIsGamesOpen] = useState(false)
@@ -119,26 +124,31 @@ export function WelcomeScreen() {
     setWindowZIndices((indices) => ({ ...indices, [windowId]: 50 + focusCounterRef.current }))
   }
 
-  desktopIcons[0].onClick = () => {
+  const openProjects = () => {
     setIsProjectsOpen(true)
     setIsProjectsMinimized(false)
     bringToFront('projects')
   }
-  desktopIcons[1].onClick = () => {
+  const openGames = () => {
     setIsGamesOpen(true)
     setIsGamesMinimized(false)
     bringToFront('games')
   }
-  desktopIcons[2].onClick = () => {
+  const openNotepad = () => {
     setIsNotepadOpen(true)
     setIsNotepadMinimized(false)
     bringToFront('notepad')
   }
-  desktopIcons[12].onClick = () => {
+  const openAIClone = () => {
     setIsAICloneOpen(true)
     setIsAICloneMinimized(false)
     bringToFront('ai-clone')
   }
+
+  desktopIcons[0].onClick = openProjects
+  desktopIcons[1].onClick = openGames
+  desktopIcons[2].onClick = openNotepad
+  desktopIcons[12].onClick = openAIClone
 
   return (
     <div
@@ -164,6 +174,12 @@ export function WelcomeScreen() {
         </div>
       </div>
       <TaskBar
+        onOpenProjects={openProjects}
+        onOpenGames={openGames}
+        onOpenNotepad={openNotepad}
+        onOpenAIClone={openAIClone}
+        onLogOff={onLogOff}
+        onShutDown={onShutDown}
         windows={[
           ...(isProjectsOpen
             ? [
