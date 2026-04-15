@@ -224,8 +224,8 @@ export function WindowModal({
       <div
         ref={windowRef}
         className={`absolute flex flex-col bg-[#ECE9D8] text-black shadow-xl overflow-hidden ${
-          isAnimating ? 'pointer-events-none' : ''
-        }`}
+          isMaximized ? '' : 'rounded-lg'
+        } ${isAnimating ? 'pointer-events-none' : ''}`}
         style={{
           left: position?.x ?? 0,
           top: position?.y ?? 0,
