@@ -19,6 +19,8 @@ interface GamesWindowProps {
   isMinimized?: boolean
   minimizeTargetRect?: DOMRect | null
   sidebarLinks?: SidebarLink[]
+  zIndex?: number
+  onFocus?: () => void
 }
 
 export function GamesWindow({
@@ -28,6 +30,8 @@ export function GamesWindow({
   isMinimized = false,
   minimizeTargetRect = null,
   sidebarLinks,
+  zIndex,
+  onFocus,
 }: GamesWindowProps) {
   const games: Game[] = [
     {
@@ -57,6 +61,8 @@ export function GamesWindow({
       icon={folderIcon}
       itemCount={games.length}
       sidebarLinks={sidebarLinks}
+      zIndex={zIndex}
+      onFocus={onFocus}
     >
       <div className="grid grid-cols-[repeat(auto-fill,minmax(120px,1fr))] gap-4">
         {games.map((game, index) => (

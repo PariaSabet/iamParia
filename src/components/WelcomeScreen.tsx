@@ -102,6 +102,8 @@ export function WelcomeScreen() {
   const [isAICloneOpen, setIsAICloneOpen] = useState(false)
   const [isAICloneMinimized, setIsAICloneMinimized] = useState(false)
   const [isMediaPlayerMinimized, setIsMediaPlayerMinimized] = useState(false)
+  const focusCounterRef = useRef(0)
+  const [windowZIndices, setWindowZIndices] = useState<Record<string, number>>({})
   const taskbarButtonRefs = useRef<Record<string, HTMLButtonElement | null>>({})
 
   const setTaskbarButtonRef =
@@ -112,21 +114,30 @@ export function WelcomeScreen() {
   const getMinimizeTargetRect = (windowId: string) =>
     taskbarButtonRefs.current[windowId]?.getBoundingClientRect() ?? null
 
+  const bringToFront = (windowId: string) => {
+    focusCounterRef.current += 1
+    setWindowZIndices((indices) => ({ ...indices, [windowId]: 50 + focusCounterRef.current }))
+  }
+
   desktopIcons[0].onClick = () => {
     setIsProjectsOpen(true)
     setIsProjectsMinimized(false)
+    bringToFront('projects')
   }
   desktopIcons[1].onClick = () => {
     setIsGamesOpen(true)
     setIsGamesMinimized(false)
+    bringToFront('games')
   }
   desktopIcons[2].onClick = () => {
     setIsNotepadOpen(true)
     setIsNotepadMinimized(false)
+    bringToFront('notepad')
   }
   desktopIcons[12].onClick = () => {
     setIsAICloneOpen(true)
     setIsAICloneMinimized(false)
+    bringToFront('ai-clone')
   }
 
   return (
@@ -221,6 +232,8 @@ export function WelcomeScreen() {
           setIsProjectsOpen(false)
           setIsProjectsMinimized(false)
         }}
+        zIndex={windowZIndices['projects']}
+        onFocus={() => bringToFront('projects')}
         sidebarLinks={[
           {
             icon: gameIcon,
@@ -228,6 +241,7 @@ export function WelcomeScreen() {
             onClick: () => {
               setIsGamesOpen(true)
               setIsGamesMinimized(false)
+              bringToFront('games')
             },
           },
           {
@@ -236,6 +250,7 @@ export function WelcomeScreen() {
             onClick: () => {
               setIsNotepadOpen(true)
               setIsNotepadMinimized(false)
+              bringToFront('notepad')
             },
           },
           {
@@ -253,6 +268,8 @@ export function WelcomeScreen() {
           setIsGamesOpen(false)
           setIsGamesMinimized(false)
         }}
+        zIndex={windowZIndices['games']}
+        onFocus={() => bringToFront('games')}
         sidebarLinks={[
           {
             icon: folderIcon,
@@ -260,6 +277,7 @@ export function WelcomeScreen() {
             onClick: () => {
               setIsProjectsOpen(true)
               setIsProjectsMinimized(false)
+              bringToFront('projects')
             },
           },
           {
@@ -268,6 +286,7 @@ export function WelcomeScreen() {
             onClick: () => {
               setIsNotepadOpen(true)
               setIsNotepadMinimized(false)
+              bringToFront('notepad')
             },
           },
           {
@@ -285,6 +304,8 @@ export function WelcomeScreen() {
           setIsNotepadOpen(false)
           setIsNotepadMinimized(false)
         }}
+        zIndex={windowZIndices['notepad']}
+        onFocus={() => bringToFront('notepad')}
       />
       <AICloneWindow
         isOpen={isAICloneOpen}
@@ -295,6 +316,8 @@ export function WelcomeScreen() {
           setIsAICloneOpen(false)
           setIsAICloneMinimized(false)
         }}
+        zIndex={windowZIndices['ai-clone']}
+        onFocus={() => bringToFront('ai-clone')}
       />
       <div className="fixed bottom-12 right-4">
         <SpotifyNowPlaying

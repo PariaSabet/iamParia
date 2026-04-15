@@ -22,6 +22,8 @@ interface ProjectsWindowProps {
   isMinimized?: boolean
   minimizeTargetRect?: DOMRect | null
   sidebarLinks?: SidebarLink[]
+  zIndex?: number
+  onFocus?: () => void
 }
 
 export function ProjectsWindow({
@@ -31,6 +33,8 @@ export function ProjectsWindow({
   isMinimized = false,
   minimizeTargetRect = null,
   sidebarLinks,
+  zIndex,
+  onFocus,
 }: ProjectsWindowProps) {
   const projects: Project[] = [
     {
@@ -86,6 +90,8 @@ export function ProjectsWindow({
       icon={folderIcon}
       itemCount={projects.length}
       sidebarLinks={sidebarLinks}
+      zIndex={zIndex}
+      onFocus={onFocus}
     >
       <div className="grid grid-cols-[repeat(auto-fill,minmax(120px,1fr))] gap-4">
         {projects.map((project, index) => (

@@ -9,6 +9,8 @@ interface NotepadWindowProps {
   onMinimize?: () => void
   isMinimized?: boolean
   minimizeTargetRect?: DOMRect | null
+  zIndex?: number
+  onFocus?: () => void
 }
 
 export function NotepadWindow({
@@ -17,6 +19,8 @@ export function NotepadWindow({
   onMinimize,
   isMinimized = false,
   minimizeTargetRect = null,
+  zIndex,
+  onFocus,
 }: NotepadWindowProps) {
   return (
     <WindowModal
@@ -29,6 +33,8 @@ export function NotepadWindow({
       icon={icon}
       itemCount={1}
       showExplorerChrome={false}
+      zIndex={zIndex}
+      onFocus={onFocus}
     >
       <div className="flex h-full min-h-0 flex-col">
         <div className="shrink-0 bg-[#F1EFE2] border-b border-[#919B9C] px-2 py-1 flex justify-start gap-3">

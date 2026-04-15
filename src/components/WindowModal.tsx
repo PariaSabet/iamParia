@@ -23,6 +23,10 @@ interface WindowModalProps {
   showExplorerChrome?: boolean
   /** Links shown in the "Other Places" sidebar section. Only used when showExplorerChrome is true. */
   sidebarLinks?: SidebarLink[]
+  /** Dynamic z-index for window stacking order. Higher values render on top. */
+  zIndex?: number
+  /** Called when the window is clicked to bring it to front. */
+  onFocus?: () => void
 }
 
 export function WindowModal({
@@ -38,6 +42,8 @@ export function WindowModal({
   statusText,
   showExplorerChrome = true,
   sidebarLinks,
+  zIndex = 50,
+  onFocus,
 }: WindowModalProps) {
   const WINDOW_WIDTH = 800
   const WINDOW_HEIGHT = 600
@@ -228,7 +234,7 @@ export function WindowModal({
   if (isMinimized && !isAnimating) return null
 
   return (
-    <div className="fixed inset-0 z-50">
+    <div className="fixed inset-0" style={{ zIndex }}>
       <div
         className="absolute inset-0 bg-black bg-opacity-50 transition-opacity duration-200"
         style={{ opacity: isMinimizing ? 0 : 1 }}
@@ -236,6 +242,7 @@ export function WindowModal({
       ></div>
       <div
         ref={windowRef}
+        onMouseDown={onFocus}
         className={`absolute flex flex-col bg-[#ECE9D8] text-black shadow-xl overflow-hidden ${
           isMaximized ? '' : 'rounded-lg'
         } ${isAnimating ? 'pointer-events-none' : ''}`}

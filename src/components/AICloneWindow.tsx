@@ -14,6 +14,8 @@ interface AICloneWindowProps {
   onMinimize?: () => void
   isMinimized?: boolean
   minimizeTargetRect?: DOMRect | null
+  zIndex?: number
+  onFocus?: () => void
 }
 
 const WELCOME_MESSAGE =
@@ -449,6 +451,8 @@ export function AICloneWindow({
   onMinimize,
   isMinimized = false,
   minimizeTargetRect = null,
+  zIndex,
+  onFocus,
 }: AICloneWindowProps) {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [messageCount, setMessageCount] = useState(0)
@@ -470,6 +474,8 @@ export function AICloneWindow({
       icon={aiCloneIcon}
       statusText={statusText}
       showExplorerChrome={false}
+      zIndex={zIndex}
+      onFocus={onFocus}
     >
       <div className="flex flex-col h-full min-h-0">
         {isAuthenticated ? (
