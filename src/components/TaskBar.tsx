@@ -20,9 +20,10 @@ interface TaskBarProps {
   onOpenAIClone: () => void
   onLogOff: () => void
   onShutDown: () => void
+  onContextMenu?: (e: React.MouseEvent<HTMLDivElement>) => void
 }
 
-export function TaskBar({ windows = [], onOpenProjects, onOpenGames, onOpenNotepad, onOpenAIClone, onLogOff, onShutDown }: TaskBarProps) {
+export function TaskBar({ windows = [], onOpenProjects, onOpenGames, onOpenNotepad, onOpenAIClone, onLogOff, onShutDown, onContextMenu }: TaskBarProps) {
   const [currentTime, setCurrentTime] = useState('')
   const [isStartMenuOpen, setIsStartMenuOpen] = useState(false)
 
@@ -53,7 +54,14 @@ export function TaskBar({ windows = [], onOpenProjects, onOpenGames, onOpenNotep
 
   return (
     <>
-      <div className="h-10 bg-gradient-to-r from-[#0A246A] via-[#3A6EA5] to-[#0A246A] flex items-center justify-between w-full">
+      <div
+        className="h-10 bg-gradient-to-r from-[#0A246A] via-[#3A6EA5] to-[#0A246A] flex items-center justify-between w-full"
+        onContextMenu={(e) => {
+          if (!onContextMenu) return
+          e.preventDefault()
+          onContextMenu(e)
+        }}
+      >
         <div
           className="h-full float-left text-2xl font-bold italic bg-[radial-gradient(circle,#5eac56_0%,#3c873c_100%)] bg-center bg-no-repeat bg-cover py-[2px] pr-6 pl-2 text-shadow rounded-r-lg mr-4 cursor-pointer"
           onClick={toggleStartMenu}

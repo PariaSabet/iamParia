@@ -6,6 +6,8 @@ interface DesktopIconProps {
   link?: string
   isDownload?: boolean
   onClick?: () => void
+  onContextMenu?: (e: React.MouseEvent<HTMLButtonElement>) => void
+  isContextActive?: boolean
 }
 
 export function DesktopIcon({
@@ -14,13 +16,14 @@ export function DesktopIcon({
   link,
   isDownload,
   onClick,
+  onContextMenu,
+  isContextActive = false,
 }: DesktopIconProps) {
   const [isSelected, setIsSelected] = useState(false)
   const clickTimeoutRef = useRef<number | null>(null)
 
   const handleClick = () => {
     if (!clickTimeoutRef.current) {
-      // First click
       setIsSelected(true)
       clickTimeoutRef.current = window.setTimeout(() => {
         clickTimeoutRef.current = null
@@ -42,11 +45,21 @@ export function DesktopIcon({
     }
   }
 
+  const handleContextMenu = (e: React.MouseEvent<HTMLButtonElement>) => {
+    if (!onContextMenu) return
+    e.preventDefault()
+    e.stopPropagation()
+    onContextMenu(e)
+  }
+
+  const highlighted = isSelected || isContextActive
+
   return (
     <button
       onClick={handleClick}
+      onContextMenu={handleContextMenu}
       className={`w-24 flex flex-col items-center p-2 rounded
-        ${isSelected ? 'bg-blue-500/30' : ''}`}
+        ${highlighted ? 'bg-blue-500/30' : ''}`}
     >
       <img src={icon} alt={label} className="w-12 h-12" />
       <span className="text-center text-sm mt-1 break-words">{label}</span>

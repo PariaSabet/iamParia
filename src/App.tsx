@@ -23,10 +23,21 @@ function App() {
   const handleLogOff = useCallback(() => setScreen('loading'), [])
   const handleShutDown = useCallback(() => setScreen('shutdown'), [])
 
-  if (screen === 'loading') return <WindowsLoader />
+  const preventNativeContextMenu = (e: React.MouseEvent) => e.preventDefault()
+
+  if (screen === 'loading') {
+    return (
+      <div onContextMenu={preventNativeContextMenu}>
+        <WindowsLoader />
+      </div>
+    )
+  }
   if (screen === 'shutdown') {
     return (
-      <div className="fixed inset-0 bg-[#0A246A] flex items-center justify-center z-[9999]">
+      <div
+        className="fixed inset-0 bg-[#0A246A] flex items-center justify-center z-[9999]"
+        onContextMenu={preventNativeContextMenu}
+      >
         <p className="text-white text-xl">Windows is shutting down...</p>
       </div>
     )
@@ -42,6 +53,7 @@ function App() {
         document.body.style.background = ''
         setScreen('loading')
       }}
+      onContextMenu={preventNativeContextMenu}
     >
       <p className="text-[#c0c0c0] text-lg">It is now safe to turn off your computer.</p>
       <p className="text-[#808080] text-sm mt-6 animate-pulse">Click anywhere to restart</p>

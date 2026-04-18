@@ -1,0 +1,122 @@
+.context-menu {
+  position: fixed;
+  min-width: 180px;
+  background: #fff;
+  border: 1px solid #0A246A;
+  box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.35);
+  padding: 2px;
+  z-index: 9999;
+  font-family: 'Tahoma', 'Segoe UI', sans-serif;
+  font-size: 12px;
+  color: #000;
+  user-select: none;
+  animation: contextMenuIn 80ms ease-out;
+}
+
+@keyframes contextMenuIn {
+  from {
+    opacity: 0;
+    transform: translateY(-2px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.context-menu-item {
+  display: flex;
+  align-items: center;
+  padding: 4px 22px 4px 24px;
+  cursor: default;
+  position: relative;
+  white-space: nowrap;
+  border: 1px solid transparent;
+  line-height: 16px;
+  min-height: 20px;
+}
+
+.context-menu-item.has-icon {
+  padding-left: 28px;
+}
+
+.context-menu-item-icon {
+  position: absolute;
+  left: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.context-menu-item-icon img {
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
+}
+
+.context-menu-item-label {
+  flex: 1;
+}
+
+.context-menu-item-accelerator {
+  margin-left: 16px;
+  color: #555;
+  font-size: 11px;
+}
+
+.context-menu-item-check {
+  position: absolute;
+  left: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #000;
+  font-size: 12px;
+  line-height: 1;
+}
+
+.context-menu-item-arrow {
+  margin-left: 12px;
+  font-size: 10px;
+  color: #000;
+}
+
+.context-menu-item.bold .context-menu-item-label {
+  font-weight: bold;
+}
+
+.context-menu-item:not(.disabled):hover,
+.context-menu-item.active {
+  background: #316ac5;
+  color: #fff;
+  border: 1px solid #0A246A;
+}
+
+.context-menu-item:not(.disabled):hover .context-menu-item-accelerator,
+.context-menu-item.active .context-menu-item-accelerator,
+.context-menu-item:not(.disabled):hover .context-menu-item-check,
+.context-menu-item.active .context-menu-item-check,
+.context-menu-item:not(.disabled):hover .context-menu-item-arrow,
+.context-menu-item.active .context-menu-item-arrow {
+  color: #fff;
+}
+
+.context-menu-item.disabled {
+  color: #8a8a8a;
+}
+
+.context-menu-item.disabled .context-menu-item-accelerator,
+.context-menu-item.disabled .context-menu-item-check,
+.context-menu-item.disabled .context-menu-item-arrow {
+  color: #8a8a8a;
+}
+
+.context-menu-separator {
+  height: 1px;
+  background: #d4d0c8;
+  border-bottom: 1px solid #ffffff;
+  margin: 3px 2px;
+}
